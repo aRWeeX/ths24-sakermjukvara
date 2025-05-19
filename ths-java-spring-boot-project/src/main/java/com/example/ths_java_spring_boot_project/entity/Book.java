@@ -13,6 +13,18 @@ public class Book {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "publication_year")
+    private Integer publicationYear;
+
+    @Column(name = "available_copies")
+    private Integer availableCopies;
+
+    @Column(name = "total_copies")
+    private Integer totalCopies;
+
+    @Column(name = "author_id")
+    private Long authorId;
+
     public Book() {}
 
     public Long getId() {
@@ -29,5 +41,37 @@ public class Book {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    public Integer getAvailableCopies() {
+        return availableCopies;
+    }
+
+    public void setAvailableCopies(Integer availableCopies) {
+        this.availableCopies = availableCopies;
+    }
+
+    public Integer getTotalCopies() {
+        return totalCopies;
+    }
+
+    public void setTotalCopies(Integer totalCopies) {
+        this.totalCopies = totalCopies;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 }
