@@ -24,6 +24,14 @@ public class Author {
 
     public Author() {}
 
+    public Author(Long id, String firstName, String lastName, Integer birthYear, String nationality) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthYear = birthYear;
+        this.nationality = nationality;
+    }
+
     public Long getId() {
         return id;
     }

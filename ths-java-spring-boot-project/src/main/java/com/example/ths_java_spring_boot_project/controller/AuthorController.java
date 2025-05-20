@@ -1,6 +1,6 @@
 package com.example.ths_java_spring_boot_project.controller;
 
-import com.example.ths_java_spring_boot_project.entity.Author;
+import com.example.ths_java_spring_boot_project.dto.AuthorDto;
 import com.example.ths_java_spring_boot_project.service.AuthorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,44 +19,52 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Author>> getAllAuthors() {
-        List<Author> authors = authorService.getAllAuthors();
+    public ResponseEntity<List<AuthorDto>> getAllAuthors() {
+        List<AuthorDto> authors = authorService.getAllAuthors();
         return ResponseEntity.ok(authors);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
-        Optional<Author> fetchedAuthor = authorService.getAuthorById(id);
+    public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
+        Optional<AuthorDto> author = authorService.getAuthorById(id);
 
-        return fetchedAuthor
+        return author
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Author> createAuthor(@RequestBody Author author) {
-        Author savedAuthor = authorService.saveAuthor(author);
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+        AuthorDto savedAuthor = authorService.saveAuthor(authorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Author> updateAuthorById(@PathVariable Long id, @RequestBody Author author) {
-        Optional<Author> existingAuthor = authorService.getAuthorById(id);
+    public ResponseEntity<AuthorDto> updateAuthorById(@PathVariable Long id, @RequestBody AuthorDto authorDto) {
+        AuthorDto updatedAuthorDto = new AuthorDto(
+                id,
+                authorDto.getFirstName(),
+                authorDto.getLastName(),
+                authorDto.getBirthYear(),
+                authorDto.getNationality()
+        );
+
+        Optional<AuthorDto> existingAuthor = authorService.getAuthorById(id);
 
         return existingAuthor
-                .map(authorToUpdate -> {
-                    author.setId(id);
-                    return ResponseEntity.ok(authorService.saveAuthor(author));
+                .map(existingAuthorDto -> {
+                    AuthorDto savedAuthorDto = authorService.saveAuthor(updatedAuthorDto);
+                    return ResponseEntity.ok(savedAuthorDto);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthorById(@PathVariable Long id) {
-        Optional<Author> existingAuthor = authorService.getAuthorById(id);
+        Optional<AuthorDto> existingAuthor = authorService.getAuthorById(id);
 
         return existingAuthor
-                .map(authorToDelete -> {
+                .map(existingAuthorDto -> {
                     authorService.deleteAuthorById(id);
                     return ResponseEntity.noContent().<Void>build();
                 })

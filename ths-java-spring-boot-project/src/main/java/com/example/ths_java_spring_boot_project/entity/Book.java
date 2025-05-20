@@ -27,6 +27,14 @@ public class Book {
 
     public Book() {}
 
+    public Book(Long id, String title, Integer publicationYear, Integer availableCopies, Integer totalCopies) {
+        this.id = id;
+        this.title = title;
+        this.publicationYear = publicationYear;
+        this.availableCopies = availableCopies;
+        this.totalCopies = totalCopies;
+    }
+
     public Long getId() {
         return id;
     }
