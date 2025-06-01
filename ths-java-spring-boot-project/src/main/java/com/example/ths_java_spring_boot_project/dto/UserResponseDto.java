@@ -1,16 +1,16 @@
 package com.example.ths_java_spring_boot_project.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UserResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private LocalDate registrationDate;
+    private LocalDateTime registrationDate;
 
     public UserResponseDto(Long id, String firstName, String lastName,
-                           String email, LocalDate registrationDate) {
+                           String email, LocalDateTime registrationDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -34,7 +34,7 @@ public class UserResponseDto {
         return email;
     }
 
-    public LocalDate getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 }

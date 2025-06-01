@@ -36,7 +36,7 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
-        BookDto savedBook = bookService.saveBook(bookDto);
+        BookDto savedBook = bookService.createBook(bookDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
@@ -55,7 +55,7 @@ public class BookController {
 
         return existingBook
                 .map(existingBookDto -> {
-                    BookDto savedBookDto = bookService.saveBook(updatedBookDto);
+                    BookDto savedBookDto = bookService.createBook(updatedBookDto);
                     return ResponseEntity.ok(savedBookDto);
                 })
                 .orElse(ResponseEntity.notFound().build());

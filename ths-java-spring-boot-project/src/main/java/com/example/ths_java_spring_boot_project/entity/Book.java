@@ -2,6 +2,9 @@ package com.example.ths_java_spring_boot_project.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "books")
 public class Book {
@@ -22,17 +25,34 @@ public class Book {
     @Column(name = "total_copies")
     private Integer totalCopies;
 
-    @Column(name = "author_id")
-    private Long authorId;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LoanBook> loanBooks = new ArrayList<>();
 
     public Book() {}
 
-    public Book(Long id, String title, Integer publicationYear, Integer availableCopies, Integer totalCopies) {
+    public Book(Long id, String title, Integer publicationYear,
+                Integer availableCopies, Integer totalCopies) {
         this.id = id;
         this.title = title;
         this.publicationYear = publicationYear;
         this.availableCopies = availableCopies;
         this.totalCopies = totalCopies;
+    }
+
+    public Book(Long id, String title, Integer publicationYear,
+                Integer availableCopies, Integer totalCopies,
+                Author author, List<LoanBook> loanBooks) {
+        this.id = id;
+        this.title = title;
+        this.publicationYear = publicationYear;
+        this.availableCopies = availableCopies;
+        this.totalCopies = totalCopies;
+        this.author = author;
+        this.loanBooks = loanBooks;
     }
 
     public Long getId() {
@@ -75,11 +95,19 @@ public class Book {
         this.totalCopies = totalCopies;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    public List<LoanBook> getLoanBooks() {
+        return loanBooks;
+    }
+
+    public void setLoanBooks(List<LoanBook> loanBooks) {
+        this.loanBooks = loanBooks;
     }
 }

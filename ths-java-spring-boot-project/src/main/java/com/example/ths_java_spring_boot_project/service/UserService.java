@@ -7,7 +7,7 @@ import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +79,7 @@ public class UserService {
                 userRequestDto.getLastName(),
                 userRequestDto.getEmail(),
                 hashedPassword,
-                LocalDate.now()
+                LocalDateTime.now()
         );
 
         return user;

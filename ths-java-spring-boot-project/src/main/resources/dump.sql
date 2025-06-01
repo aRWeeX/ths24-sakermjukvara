@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS books (
     publication_year INTEGER,
     available_copies INTEGER DEFAULT 1,
     total_copies INTEGER DEFAULT 1,
-    author_id INTEGER,
+    author_id BIGINT,
     FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('Pippi Longstocking', 1945, 2, 3, 1);
@@ -201,5 +201,13 @@ INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VAL
 INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 49, '2024-01-28 11:30:00', '2024-02-11 11:30:00', '2024-02-09 15:45:00');
 INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 50, '2024-01-30 16:15:00', '2024-02-13 16:15:00', '2024-02-11 12:30:00');
 INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 10, '2024-02-02 14:00:00', '2024-02-16 14:00:00', '2024-02-14 10:00:00');
+
+CREATE TABLE IF NOT EXISTS loan_books (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    loan_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
+);
 
 COMMIT;

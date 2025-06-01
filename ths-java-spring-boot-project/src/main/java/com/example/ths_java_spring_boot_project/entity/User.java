@@ -2,7 +2,7 @@ package com.example.ths_java_spring_boot_project.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -25,12 +25,12 @@ public class User {
     private String hashedPassword;
 
     @Column(name = "registration_date")
-    private LocalDate registrationDate;
+    private LocalDateTime registrationDate;
 
     public User() {}
 
     public User(String firstName, String lastName, String email,
-                String hashedPassword, LocalDate registrationDate) {
+                String hashedPassword, LocalDateTime registrationDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -78,11 +78,11 @@ public class User {
         this.hashedPassword = hashedPassword;
     }
 
-    public LocalDate getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 }

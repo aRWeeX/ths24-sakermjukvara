@@ -33,7 +33,7 @@ public class BookService {
                 .map(this::getBookDto);
     }
 
-    public BookDto saveBook(BookDto bookDto) {
+    public BookDto createBook(BookDto bookDto) {
         Book savedBook = bookRepository.save(getBook(bookDto));
         return getBookDto(savedBook);
     }
@@ -49,7 +49,7 @@ public class BookService {
                 book.getPublicationYear(),
                 book.getAvailableCopies(),
                 book.getTotalCopies(),
-                book.getAuthorId()
+                book.getAuthor().getId()
         );
 
         return bookDto;
