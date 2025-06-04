@@ -34,25 +34,23 @@ public class Book {
 
     public Book() {}
 
-    public Book(Long id, String title, Integer publicationYear,
-                Integer availableCopies, Integer totalCopies) {
-        this.id = id;
+    public Book(String title, Integer publicationYear, Integer availableCopies,
+                Integer totalCopies, Author author) {
         this.title = title;
         this.publicationYear = publicationYear;
         this.availableCopies = availableCopies;
         this.totalCopies = totalCopies;
+        this.author = author;
     }
 
     public Book(Long id, String title, Integer publicationYear,
-                Integer availableCopies, Integer totalCopies,
-                Author author, List<LoanBook> loanBooks) {
+                Integer availableCopies, Integer totalCopies, Author author) {
         this.id = id;
         this.title = title;
         this.publicationYear = publicationYear;
         this.availableCopies = availableCopies;
         this.totalCopies = totalCopies;
         this.author = author;
-        this.loanBooks = loanBooks;
     }
 
     public Long getId() {
@@ -109,5 +107,27 @@ public class Book {
 
     public void setLoanBooks(List<LoanBook> loanBooks) {
         this.loanBooks = loanBooks;
+    }
+
+    public void addLoanBook(LoanBook loanBook) {
+        loanBooks.add(loanBook);
+        loanBook.setBook(this);
+    }
+
+    public void removeLoanBook(LoanBook loanBook) {
+        loanBooks.remove(loanBook);
+        loanBook.setBook(null);
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", publicationYear=" + publicationYear +
+                ", availableCopies=" + availableCopies +
+                ", totalCopies=" + totalCopies +
+                ", author=" + (author != null ? author.getId() : null) +
+                '}';
     }
 }

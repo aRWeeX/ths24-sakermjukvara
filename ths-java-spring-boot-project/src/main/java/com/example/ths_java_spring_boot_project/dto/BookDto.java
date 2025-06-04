@@ -8,9 +8,10 @@ public class BookDto {
     private Integer totalCopies;
     private Long authorId;
 
+    public BookDto() {}
+
     public BookDto(Long id, String title, Integer publicationYear,
-                   Integer availableCopies, Integer totalCopies,
-                   Long authorId) {
+                   Integer availableCopies, Integer totalCopies, Long authorId) {
         this.id = id;
         this.title = title;
         this.publicationYear = publicationYear;

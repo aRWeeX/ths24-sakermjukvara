@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/authors")
@@ -26,48 +25,25 @@ public class AuthorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
-        Optional<AuthorDto> author = authorService.getAuthorById(id);
-
-        return author
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        AuthorDto author = authorService.getAuthorById(id);
+        return ResponseEntity.ok(author);
     }
 
     @PostMapping
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
-        AuthorDto savedAuthor = authorService.saveAuthor(authorDto);
+        AuthorDto savedAuthor = authorService.createAuthor(authorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> updateAuthorById(@PathVariable Long id, @RequestBody AuthorDto authorDto) {
-        AuthorDto updatedAuthorDto = new AuthorDto(
-                id,
-                authorDto.getFirstName(),
-                authorDto.getLastName(),
-                authorDto.getBirthYear(),
-                authorDto.getNationality()
-        );
-
-        Optional<AuthorDto> existingAuthor = authorService.getAuthorById(id);
-
-        return existingAuthor
-                .map(existingAuthorDto -> {
-                    AuthorDto savedAuthorDto = authorService.saveAuthor(updatedAuthorDto);
-                    return ResponseEntity.ok(savedAuthorDto);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto authorDto) {
+        AuthorDto updatedAuthor = authorService.updateAuthor(id, authorDto);
+        return ResponseEntity.ok(updatedAuthor);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthorById(@PathVariable Long id) {
-        Optional<AuthorDto> existingAuthor = authorService.getAuthorById(id);
-
-        return existingAuthor
-                .map(existingAuthorDto -> {
-                    authorService.deleteAuthorById(id);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        authorService.getAuthorById(id);
+        return ResponseEntity.noContent().build();
     }
 }

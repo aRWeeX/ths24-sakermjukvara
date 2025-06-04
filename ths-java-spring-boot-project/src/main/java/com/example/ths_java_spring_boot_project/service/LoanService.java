@@ -6,15 +6,17 @@ import com.example.ths_java_spring_boot_project.entity.Book;
 import com.example.ths_java_spring_boot_project.entity.Loan;
 import com.example.ths_java_spring_boot_project.entity.LoanBook;
 import com.example.ths_java_spring_boot_project.entity.User;
+import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundException;
 import com.example.ths_java_spring_boot_project.repository.BookRepository;
 import com.example.ths_java_spring_boot_project.repository.LoanRepository;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class LoanService {
@@ -29,11 +31,19 @@ public class LoanService {
         this.bookRepository = bookRepository;
     }
 
-    public LoanResponseDto createLoan(LoanRequestDto loanRequestDto) {
+    @Transactional
+    public LoanResponseDto issueLoan(LoanRequestDto loanRequestDto) {
+        validateLoan(loanRequestDto);
+
         User user = userRepository.findById(loanRequestDto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found with ID: " + loanRequestDto.getUserId()));
 
         List<Book> books = bookRepository.findAllById(loanRequestDto.getBookIds());
+
+        if (books.size() != loanRequestDto.getBookIds().size()) {
+            throw new ResourceNotFoundException("One or more books were not found");
+        }
 
         for (Book book : books) {
             if (book.getAvailableCopies() <= 0) {
@@ -41,30 +51,18 @@ public class LoanService {
             }
 
             book.setAvailableCopies(book.getAvailableCopies() - 1);
+            bookRepository.save(book);
         }
 
-        Loan loan = new Loan();
-        loan.setUser(user);
-        loan.setBorrowedDate(LocalDateTime.now());
-        loan.setDueDate(LocalDateTime.now().plusDays(14));
-
-        List<LoanBook> loanBooks = books.stream()
-                .map(book -> {
-                    LoanBook loanBook = new LoanBook();
-                    loanBook.setLoan(loan);
-                    loanBook.setBook(book);
-                    return loanBook;
-                })
-                .toList();
-
-        loan.setLoanBooks(loanBooks);
+        Loan loan = toLoanEntity(user, books);
         loanRepository.save(loan);
-        return getLoanResponseDto(loan);
+        return toLoanResponseDto(loan);
     }
 
+    @Transactional
     public LoanResponseDto returnLoan(Long loanId) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new EntityNotFoundException("Loan not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Loan not found with ID: " + loanId));
 
         loanRepository.markLoanAsReturned(loanId);
 
@@ -74,48 +72,62 @@ public class LoanService {
             bookRepository.save(book);
         }
 
-        loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new EntityNotFoundException("Loan not found"));
-
-        return getLoanResponseDto(loan);
+        return toLoanResponseDto(loan);
     }
 
-    private LoanResponseDto getLoanResponseDto(Loan loan) {
-        LoanResponseDto loanResponseDto = new LoanResponseDto(
+    private LoanResponseDto toLoanResponseDto(Loan loan) {
+        return new LoanResponseDto(
                 loan.getId(),
                 loan.getUser().getId(),
                 loan.getUser().getEmail(),
                 loan.getLoanBooks().stream()
-                        .map(lb -> lb.getBook().getTitle())
+                        .map(loanBook -> loanBook.getBook().getTitle())
                         .toList(),
                 loan.getBorrowedDate(),
                 loan.getDueDate(),
                 loan.getReturnedDate()
         );
-
-        return loanResponseDto;
     }
 
-    private Loan getLoan(LoanRequestDto loanRequestDto) {
+    private Loan toLoanEntity(User user, List<Book> books) {
         Loan loan = new Loan();
-
-        User user = userRepository.findById(loanRequestDto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
         loan.setUser(user);
-        List<LoanBook> loanBooks = new ArrayList<>();
-
-        for (Long bookId : loanRequestDto.getBookIds()) {
-            Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new IllegalStateException("Book not found"));
-
-            LoanBook loanBook = new LoanBook(loan, book);
-            loanBooks.add(loanBook);
-        }
-
-        loan.setLoanBooks(loanBooks);
         loan.setBorrowedDate(LocalDateTime.now());
         loan.setDueDate(LocalDateTime.now().plusDays(14));
+
+        List<LoanBook> loanBooks = books.stream()
+                .map(book -> new LoanBook(loan, book))
+                .toList();
+
+        loan.setLoanBooks(loanBooks);
         return loan;
+    }
+
+    private void validateLoan(LoanRequestDto loanRequestDto) {
+        if (loanRequestDto.getUserId() == null) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
+        if (!userRepository.existsById(loanRequestDto.getUserId())) {
+            throw new IllegalStateException("User does not exist with ID: " + loanRequestDto.getUserId());
+        }
+
+        List<Long> bookIds = loanRequestDto.getBookIds();
+
+        if (bookIds == null || bookIds.isEmpty()) {
+            throw new IllegalArgumentException("At least one book ID is required");
+        }
+
+        Set<Long> seenBookIds = new HashSet<>();
+
+        for (Long bookId : bookIds) {
+            if (!seenBookIds.add(bookId)) {
+                throw new IllegalArgumentException("Duplicate book ID in loan: " + bookId);
+            }
+
+            if (!bookRepository.existsById(bookId)) {
+                throw new IllegalStateException("Book does not exist with ID: " + bookId);
+            }
+        }
     }
 }

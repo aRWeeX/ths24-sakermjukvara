@@ -17,8 +17,8 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanResponseDto> createLoan(@RequestBody LoanRequestDto loanRequestDto) {
-        LoanResponseDto loanResponseDto = loanService.createLoan(loanRequestDto);
+    public ResponseEntity<LoanResponseDto> issueLoan(@RequestBody LoanRequestDto loanRequestDto) {
+        LoanResponseDto loanResponseDto = loanService.issueLoan(loanRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(loanResponseDto);
     }
 

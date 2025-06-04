@@ -15,8 +15,8 @@ public class LoanResponseDto {
     public LoanResponseDto() {}
 
     public LoanResponseDto(Long loanId, Long userId, String userName,
-                           List<String> bookTitles, LocalDateTime borrowDate,
-                           LocalDateTime dueDate, LocalDateTime returnDate) {
+                           List<String> bookTitles, LocalDateTime borrowDate, LocalDateTime dueDate,
+                           LocalDateTime returnDate) {
         this.loanId = loanId;
         this.userId = userId;
         this.userName = userName;

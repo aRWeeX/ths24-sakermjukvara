@@ -1,5 +1,6 @@
 package com.example.ths_java_spring_boot_project.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -7,7 +8,10 @@ import java.util.Objects;
 
 @Embeddable
 public class LoanBookId implements Serializable {
+    @Column(name = "loan_id")
     private Long loanId;
+
+    @Column(name = "book_id")
     private Long bookId;
 
     public LoanBookId() {}
@@ -40,6 +44,7 @@ public class LoanBookId implements Serializable {
         if (!(o instanceof LoanBookId)) return false;
 
         LoanBookId that = (LoanBookId) o;
+
         return Objects.equals(loanId, that.loanId) &&
                 Objects.equals(bookId, that.bookId);
     }

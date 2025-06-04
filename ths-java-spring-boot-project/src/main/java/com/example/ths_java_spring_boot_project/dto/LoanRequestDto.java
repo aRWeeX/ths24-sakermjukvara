@@ -17,15 +17,7 @@ public class LoanRequestDto {
         return userId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public List<Long> getBookIds() {
         return bookIds;
-    }
-
-    public void setBookIds(List<Long> bookIds) {
-        this.bookIds = bookIds;
     }
 }

@@ -24,7 +24,16 @@ public class Author {
 
     public Author() {}
 
-    public Author(Long id, String firstName, String lastName, Integer birthYear, String nationality) {
+    public Author(String firstName, String lastName, Integer birthYear,
+                  String nationality) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthYear = birthYear;
+        this.nationality = nationality;
+    }
+
+    public Author(Long id, String firstName, String lastName,
+                  Integer birthYear, String nationality) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,5 +79,16 @@ public class Author {
 
     public void setNationality(String nationality) {
         this.nationality = nationality;
+    }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthYear=" + birthYear +
+                ", nationality='" + nationality + '\'' +
+                '}';
     }
 }

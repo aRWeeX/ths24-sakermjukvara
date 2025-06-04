@@ -38,6 +38,16 @@ public class User {
         this.registrationDate = registrationDate;
     }
 
+    public User(Long id, String firstName, String lastName,
+                String email, String hashedPassword, LocalDateTime registrationDate) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.hashedPassword = hashedPassword;
+        this.registrationDate = registrationDate;
+    }
+
     public Long getId() {
         return id;
     }

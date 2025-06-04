@@ -32,12 +32,18 @@ public class Loan {
 
     public Loan() {}
 
-    public Loan(Long id, User user, List<LoanBook> loanBooks,
-                LocalDateTime borrowedDate, LocalDateTime dueDate,
+    public Loan(User user, LocalDateTime borrowedDate, LocalDateTime dueDate,
                 LocalDateTime returnedDate) {
+        this.user = user;
+        this.borrowedDate = borrowedDate;
+        this.dueDate = dueDate;
+        this.returnedDate = returnedDate;
+    }
+
+    public Loan(Long id, User user, LocalDateTime borrowedDate,
+                LocalDateTime dueDate, LocalDateTime returnedDate) {
         this.id = id;
         this.user = user;
-        this.loanBooks = loanBooks;
         this.borrowedDate = borrowedDate;
         this.dueDate = dueDate;
         this.returnedDate = returnedDate;
@@ -91,9 +97,24 @@ public class Loan {
         this.returnedDate = returnedDate;
     }
 
-    public List<Book> getBooks() {
-        return loanBooks.stream()
-                .map(LoanBook::getBook)
-                .toList();
+    public void addLoanBook(LoanBook loanBook) {
+        loanBooks.add(loanBook);
+        loanBook.setLoan(this);
+    }
+
+    public void removeLoanBook(LoanBook loanBook) {
+        loanBooks.remove(loanBook);
+        loanBook.setLoan(null);
+    }
+
+    @Override
+    public String toString() {
+        return "Loan{" +
+                "id=" + id +
+                ", user=" + (user != null ? user.getId() : null) +
+                ", borrowedDate=" + borrowedDate +
+                ", dueDate=" + dueDate +
+                ", returnedDate=" + returnedDate +
+                '}';
     }
 }

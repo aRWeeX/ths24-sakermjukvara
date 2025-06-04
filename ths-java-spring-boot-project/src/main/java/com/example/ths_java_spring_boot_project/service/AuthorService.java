@@ -2,12 +2,15 @@ package com.example.ths_java_spring_boot_project.service;
 
 import com.example.ths_java_spring_boot_project.dto.AuthorDto;
 import com.example.ths_java_spring_boot_project.entity.Author;
+import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundException;
 import com.example.ths_java_spring_boot_project.repository.AuthorRepository;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthorService {
@@ -18,46 +21,103 @@ public class AuthorService {
     }
 
     public List<AuthorDto> getAllAuthors() {
-        return authorRepository.findAll().stream()
-                .map(this::getAuthorDto)
-                .collect(Collectors.toList());
+        List<Author> authors = authorRepository.findAll();
+
+        if (authors == null) {
+            return Collections.emptyList();
+        }
+
+        try {
+            return authors.stream()
+                    .map(this::toAuthorDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while retrieving authors", e);
+        }
     }
 
-    public Optional<AuthorDto> getAuthorById(Long id) {
+    public AuthorDto getAuthorById(Long id) {
         return authorRepository.findById(id)
-                .map(this::getAuthorDto);
+                .map(this::toAuthorDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + id));
     }
 
-    public AuthorDto saveAuthor(AuthorDto authorDto) {
-        Author savedAuthor = authorRepository.save(getAuthor(authorDto));
-        return getAuthorDto(savedAuthor);
+    public AuthorDto createAuthor(AuthorDto authorDto) {
+        validateAuthor(authorDto);
+        Author savedAuthor = authorRepository.save(toAuthorEntity(authorDto));
+        return toAuthorDto(savedAuthor);
+    }
+
+    public AuthorDto updateAuthor(Long id, AuthorDto updatedAuthor) {
+        validateAuthor(updatedAuthor);
+        Optional<Author> optionalAuthor = authorRepository.findById(id);
+
+        if (optionalAuthor.isEmpty()) {
+            throw new ResourceNotFoundException("Author not found with ID: " + id);
+        }
+
+        Author author = optionalAuthor.get();
+        author.setFirstName(updatedAuthor.getFirstName());
+        author.setLastName(updatedAuthor.getLastName());
+        author.setBirthYear(updatedAuthor.getBirthYear());
+        author.setNationality(updatedAuthor.getNationality());
+
+        Author savedAuthor = authorRepository.save(author);
+        return toAuthorDto(savedAuthor);
     }
 
     public void deleteAuthorById(Long id) {
+        if (!authorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Author does not exist with ID: " + id);
+        }
+
         authorRepository.deleteById(id);
     }
 
-    private AuthorDto getAuthorDto(Author author) {
-        AuthorDto authorDto = new AuthorDto(
+    private AuthorDto toAuthorDto(Author author) {
+        return new AuthorDto(
                 author.getId(),
                 author.getFirstName(),
                 author.getLastName(),
                 author.getBirthYear(),
                 author.getNationality()
         );
-
-        return authorDto;
     }
 
-    private Author getAuthor(AuthorDto authorDto) {
-        Author author = new Author(
+    private Author toAuthorEntity(AuthorDto authorDto) {
+        return new Author(
                 authorDto.getId(),
                 authorDto.getFirstName(),
                 authorDto.getLastName(),
                 authorDto.getBirthYear(),
                 authorDto.getNationality()
         );
+    }
 
-        return author;
+    private void validateAuthor(AuthorDto authorDto) {
+        if (authorDto.getFirstName() == null || authorDto.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("First name is required");
+        }
+
+        if (authorDto.getLastName() == null || authorDto.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name is required");
+        }
+
+        // Birth year can be NULL
+        if (authorDto.getBirthYear() != null) {
+            int year = authorDto.getBirthYear();
+            int currentYear = Year.now().getValue();
+
+            if (year < 1750 || year > currentYear) {
+                throw new IllegalArgumentException("Birth year must be between 1750 and " + currentYear);
+            }
+        }
+
+        // Nationality can be NULL
+        String nationality = authorDto.getNationality();
+
+        if (nationality != null) {
+            nationality = nationality.trim();
+        }
     }
 }

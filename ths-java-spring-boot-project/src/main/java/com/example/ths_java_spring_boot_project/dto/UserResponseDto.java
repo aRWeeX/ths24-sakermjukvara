@@ -9,6 +9,8 @@ public class UserResponseDto {
     private String email;
     private LocalDateTime registrationDate;
 
+    public UserResponseDto() {}
+
     public UserResponseDto(Long id, String firstName, String lastName,
                            String email, LocalDateTime registrationDate) {
         this.id = id;

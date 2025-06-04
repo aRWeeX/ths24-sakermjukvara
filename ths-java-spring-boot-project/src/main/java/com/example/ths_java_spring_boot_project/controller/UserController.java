@@ -27,39 +27,27 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
-        Optional<UserResponseDto> user = userService.getUserById(id);
-
-        return user
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        UserResponseDto user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto savedUser = userService.saveUser(userRequestDto);
+        UserResponseDto savedUser = userService.createUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUserById(
+    public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
             @RequestBody UserRequestDto userRequestDto) {
-        Optional<UserResponseDto> updatedUser = userService.updateUserById(id, userRequestDto);
-
-        return updatedUser
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
-        Optional<UserResponseDto> existingUser = userService.getUserById(id);
-
-        return existingUser
-                .map(existingUserResponseDto -> {
-                    userService.deleteUserById(id);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        userService.getUserById(id);
+        return ResponseEntity.noContent().build();
     }
 }

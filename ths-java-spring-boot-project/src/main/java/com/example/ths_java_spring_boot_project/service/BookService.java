@@ -3,14 +3,18 @@ package com.example.ths_java_spring_boot_project.service;
 import com.example.ths_java_spring_boot_project.dto.AuthorDto;
 import com.example.ths_java_spring_boot_project.dto.BookDto;
 import com.example.ths_java_spring_boot_project.dto.BookWithDetailsDto;
+import com.example.ths_java_spring_boot_project.entity.Author;
 import com.example.ths_java_spring_boot_project.entity.Book;
+import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundException;
 import com.example.ths_java_spring_boot_project.repository.AuthorRepository;
 import com.example.ths_java_spring_boot_project.repository.BookRepository;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -23,27 +27,67 @@ public class BookService {
     }
 
     public List<BookDto> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(this::getBookDto)
-                .collect(Collectors.toList());
+        List<Book> books = bookRepository.findAll();
+
+        if (books == null) {
+            return Collections.emptyList();
+        }
+
+        try {
+            return books.stream()
+                    .map(this::toBookDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new ServiceException("An error occurred while retrieving books", e);
+        }
     }
 
-    public Optional<BookDto> getBookById(Long id) {
+    public BookDto getBookById(Long id) {
         return bookRepository.findById(id)
-                .map(this::getBookDto);
+                .map(this::toBookDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + id));
     }
 
     public BookDto createBook(BookDto bookDto) {
-        Book savedBook = bookRepository.save(getBook(bookDto));
-        return getBookDto(savedBook);
+        validateBook(bookDto);
+        Book savedBook = bookRepository.save(toBookEntity(bookDto));
+        return toBookDto(savedBook);
+    }
+
+    public BookDto updateBook(Long id, BookDto updatedBook) {
+        validateBook(updatedBook);
+        Optional<Book> optionalBook = bookRepository.findById(id);
+
+        if (optionalBook.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with ID: " + id);
+        }
+
+        Book book = optionalBook.get();
+        book.setTitle(updatedBook.getTitle());
+        book.setPublicationYear(updatedBook.getPublicationYear());
+        book.setAvailableCopies(updatedBook.getAvailableCopies());
+        book.setTotalCopies(updatedBook.getTotalCopies());
+
+        Author author = authorRepository.findById(updatedBook.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Author not found with ID: " + updatedBook.getAuthorId()));
+
+        book.setAuthor(author);
+
+        Book savedBook = bookRepository.save(book);
+        return toBookDto(savedBook);
     }
 
     public void deleteBookById(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Book does not exist with ID: " + id);
+        }
+
         bookRepository.deleteById(id);
     }
 
-    private BookDto getBookDto(Book book) {
-        BookDto bookDto = new BookDto(
+    private BookDto toBookDto(Book book) {
+        return new BookDto(
                 book.getId(),
                 book.getTitle(),
                 book.getPublicationYear(),
@@ -51,20 +95,20 @@ public class BookService {
                 book.getTotalCopies(),
                 book.getAuthor().getId()
         );
-
-        return bookDto;
     }
 
-    private Book getBook(BookDto bookDto) {
-        Book book = new Book(
+    private Book toBookEntity(BookDto bookDto) {
+        Author author = new Author();
+        author.setId(bookDto.getAuthorId());
+
+        return new Book(
                 bookDto.getId(),
                 bookDto.getTitle(),
                 bookDto.getPublicationYear(),
                 bookDto.getAvailableCopies(),
-                bookDto.getTotalCopies()
+                bookDto.getTotalCopies(),
+                author
         );
-
-        return book;
     }
 
     public BookWithDetailsDto getBookWithDetailsDto(BookDto bookDto) {
@@ -78,7 +122,7 @@ public class BookService {
                 ))
                 .orElse(null);
 
-        BookWithDetailsDto bookWithDetailsDto = new BookWithDetailsDto(
+        return new BookWithDetailsDto(
                 bookDto.getId(),
                 bookDto.getTitle(),
                 bookDto.getPublicationYear(),
@@ -86,7 +130,46 @@ public class BookService {
                 bookDto.getTotalCopies(),
                 authorDto
         );
+    }
 
-        return bookWithDetailsDto;
+    private void validateBook(BookDto bookDto) {
+        if (bookDto.getTitle() == null || bookDto.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+
+        // Publication year can be NULL
+        if (bookDto.getPublicationYear() != null) {
+            int year = bookDto.getPublicationYear();
+            int currentYear = Year.now().getValue();
+
+            if (year < 1800 || year > currentYear + 1) {
+                throw new IllegalArgumentException("Publication year must be between 1800 and " + (currentYear + 1));
+            }
+        }
+
+        // Available copies and total copies can be NULL
+        Integer available = bookDto.getAvailableCopies();
+        Integer total = bookDto.getTotalCopies();
+
+        if (available != null && available < 0) {
+            throw new IllegalArgumentException("Available copies cannot be negative");
+        }
+
+        if (total != null && total < 0) {
+            throw new IllegalArgumentException("Total copies cannot be negative");
+        }
+
+        if (available != null && total != null && available > total) {
+            throw new IllegalArgumentException("Available copies cannot exceed total copies");
+        }
+
+        // Author ID can be NULL
+        if (bookDto.getAuthorId() != null) {
+            boolean authorExists = authorRepository.existsById(bookDto.getAuthorId());
+
+            if (!authorExists) {
+                throw new IllegalArgumentException("Author does not exist with ID: " + bookDto.getAuthorId());
+            }
+        }
     }
 }
