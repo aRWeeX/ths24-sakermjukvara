@@ -5,6 +5,7 @@
 --
 BEGIN;
 
+DROP TABLE IF EXISTS loan_books;
 DROP TABLE IF EXISTS loans;
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS users;
@@ -144,70 +145,119 @@ INSERT INTO users (first_name, last_name, email, password, registration_date) VA
 CREATE TABLE IF NOT EXISTS loans (
     loan_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
     borrowed_date DATETIME NOT NULL,
     due_date DATETIME NOT NULL,
     returned_date DATETIME,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (1, 1, '2024-01-15 10:00:00', '2024-01-29 10:00:00', '2024-01-25 14:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (2, 5, '2024-01-20 11:00:00', '2024-02-03 11:00:00', '2024-02-01 09:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (3, 8, '2024-01-25 09:30:00', '2024-02-08 09:30:00', '2024-02-05 16:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (4, 12, '2024-02-01 14:00:00', '2024-02-15 14:00:00', '2024-02-12 11:20:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (5, 15, '2024-02-05 13:30:00', '2024-02-19 13:30:00', '2024-02-18 10:00:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (6, 20, '2024-02-10 08:45:00', '2024-02-24 08:45:00', '2024-02-22 15:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (7, 25, '2024-02-15 16:15:00', '2024-03-01 16:15:00', '2024-02-28 12:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 30, '2024-02-20 10:30:00', '2024-03-06 10:30:00', '2024-03-04 14:20:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 35, '2024-02-25 12:00:00', '2024-03-11 12:00:00', '2024-03-09 09:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 40, '2024-03-01 15:45:00', '2024-03-15 15:45:00', '2024-03-13 11:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (1, 2, '2024-03-10 09:00:00', '2024-03-24 09:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (2, 7, '2024-03-12 14:30:00', '2024-03-26 14:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (3, 11, '2024-03-15 11:15:00', '2024-03-29 11:15:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (4, 16, '2024-03-18 13:45:00', '2024-04-01 13:45:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (5, 21, '2024-03-20 10:30:00', '2024-04-03 10:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (6, 26, '2024-03-22 15:00:00', '2024-04-05 15:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (7, 31, '2024-03-24 12:30:00', '2024-04-07 12:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 36, '2024-03-26 09:45:00', '2024-04-09 09:45:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 41, '2024-03-28 14:00:00', '2024-04-11 14:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 45, '2024-03-30 11:30:00', '2024-04-13 11:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (1, 3, '2024-02-05 08:30:00', '2024-02-19 08:30:00', '2024-02-17 13:00:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (2, 6, '2024-02-08 10:15:00', '2024-02-22 10:15:00', '2024-02-20 15:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (3, 9, '2024-02-12 13:45:00', '2024-02-26 13:45:00', '2024-02-24 09:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (4, 14, '2024-02-15 09:00:00', '2024-03-01 09:00:00', '2024-02-28 14:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (5, 17, '2024-02-18 14:30:00', '2024-03-04 14:30:00', '2024-03-02 11:00:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (6, 22, '2024-02-20 11:45:00', '2024-03-06 11:45:00', '2024-03-04 16:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (7, 24, '2024-02-22 16:00:00', '2024-03-08 16:00:00', '2024-03-06 12:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 28, '2024-02-25 12:15:00', '2024-03-11 12:15:00', '2024-03-09 10:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 33, '2024-02-28 10:00:00', '2024-03-14 10:00:00', '2024-03-12 15:20:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 38, '2024-03-02 15:30:00', '2024-03-16 15:30:00', '2024-03-14 09:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (1, 13, '2024-03-31 10:00:00', '2024-04-14 10:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (2, 27, '2024-03-31 11:30:00', '2024-04-14 11:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (3, 4, '2024-04-01 09:15:00', '2024-04-15 09:15:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (4, 18, '2024-04-01 14:45:00', '2024-04-15 14:45:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (5, 19, '2024-04-02 12:00:00', '2024-04-16 12:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (6, 23, '2024-04-02 16:30:00', '2024-04-16 16:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (7, 29, '2024-04-03 11:00:00', '2024-04-17 11:00:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 32, '2024-04-03 15:15:00', '2024-04-17 15:15:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 34, '2024-04-04 13:30:00', '2024-04-18 13:30:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 37, '2024-04-04 10:45:00', '2024-04-18 10:45:00', NULL);
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (1, 39, '2024-01-10 14:00:00', '2024-01-24 14:00:00', '2024-01-22 11:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (2, 42, '2024-01-12 09:30:00', '2024-01-26 09:30:00', '2024-01-24 16:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (3, 43, '2024-01-15 11:45:00', '2024-01-29 11:45:00', '2024-01-27 13:00:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (4, 44, '2024-01-18 15:30:00', '2024-02-01 15:30:00', '2024-01-30 10:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (5, 46, '2024-01-20 12:15:00', '2024-02-03 12:15:00', '2024-02-01 14:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (6, 47, '2024-01-22 10:00:00', '2024-02-05 10:00:00', '2024-02-03 16:00:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (7, 48, '2024-01-25 13:45:00', '2024-02-08 13:45:00', '2024-02-06 11:15:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (8, 49, '2024-01-28 11:30:00', '2024-02-11 11:30:00', '2024-02-09 15:45:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (9, 50, '2024-01-30 16:15:00', '2024-02-13 16:15:00', '2024-02-11 12:30:00');
-INSERT INTO loans (user_id, book_id, borrowed_date, due_date, returned_date) VALUES (10, 10, '2024-02-02 14:00:00', '2024-02-16 14:00:00', '2024-02-14 10:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-01-15 10:00:00', '2024-01-29 10:00:00', '2024-01-25 14:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-01-20 11:00:00', '2024-02-03 11:00:00', '2024-02-01 09:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-01-25 09:30:00', '2024-02-08 09:30:00', '2024-02-05 16:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (4, '2024-02-01 14:00:00', '2024-02-15 14:00:00', '2024-02-12 11:20:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (5, '2024-02-05 13:30:00', '2024-02-19 13:30:00', '2024-02-18 10:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (6, '2024-02-10 08:45:00', '2024-02-24 08:45:00', '2024-02-22 15:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (7, '2024-02-15 16:15:00', '2024-03-01 16:15:00', '2024-02-28 12:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '2024-02-20 10:30:00', '2024-03-06 10:30:00', '2024-03-04 14:20:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-02-25 12:00:00', '2024-03-11 12:00:00', '2024-03-09 09:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-03-01 15:45:00', '2024-03-15 15:45:00', '2024-03-13 11:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-03-10 09:00:00', '2024-03-24 09:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-03-12 14:30:00', '2024-03-26 14:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-03-15 11:15:00', '2024-03-29 11:15:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (4, '2024-03-18 13:45:00', '2024-04-01 13:45:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (5, '2024-03-20 10:30:00', '2024-04-03 10:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (6, '2024-03-22 15:00:00', '2024-04-05 15:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (7, '2024-03-24 12:30:00', '2024-04-07 12:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '2024-03-26 09:45:00', '2024-04-09 09:45:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-03-28 14:00:00', '2024-04-11 14:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-03-30 11:30:00', '2024-04-13 11:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-02-05 08:30:00', '2024-02-19 08:30:00', '2024-02-17 13:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-02-08 10:15:00', '2024-02-22 10:15:00', '2024-02-20 15:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-02-12 13:45:00', '2024-02-26 13:45:00', '2024-02-24 09:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (4, '2024-02-15 09:00:00', '2024-03-01 09:00:00', '2024-02-28 14:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (5, '2024-02-18 14:30:00', '2024-03-04 14:30:00', '2024-03-02 11:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (6, '2024-02-20 11:45:00', '2024-03-06 11:45:00', '2024-03-04 16:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (7, '2024-02-22 16:00:00', '2024-03-08 16:00:00', '2024-03-06 12:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '2024-02-25 12:15:00', '2024-03-11 12:15:00', '2024-03-09 10:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-02-28 10:00:00', '2024-03-14 10:00:00', '2024-03-12 15:20:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-03-02 15:30:00', '2024-03-16 15:30:00', '2024-03-14 09:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-03-31 10:00:00', '2024-04-14 10:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-03-31 11:30:00', '2024-04-14 11:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-04-01 09:15:00', '2024-04-15 09:15:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (4, '2024-04-01 14:45:00', '2024-04-15 14:45:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (5, '2024-04-02 12:00:00', '2024-04-16 12:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (6, '2024-04-02 16:30:00', '2024-04-16 16:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (7, '2024-04-03 11:00:00', '2024-04-17 11:00:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '2024-04-03 15:15:00', '2024-04-17 15:15:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-04-04 13:30:00', '2024-04-18 13:30:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-04-04 10:45:00', '2024-04-18 10:45:00', NULL);
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-01-10 14:00:00', '2024-01-24 14:00:00', '2024-01-22 11:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-01-12 09:30:00', '2024-01-26 09:30:00', '2024-01-24 16:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-01-15 11:45:00', '2024-01-29 11:45:00', '2024-01-27 13:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (4, '2024-01-18 15:30:00', '2024-02-01 15:30:00', '2024-01-30 10:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (5, '2024-01-20 12:15:00', '2024-02-03 12:15:00', '2024-02-01 14:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (6, '2024-01-22 10:00:00', '2024-02-05 10:00:00', '2024-02-03 16:00:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (7, '2024-01-25 13:45:00', '2024-02-08 13:45:00', '2024-02-06 11:15:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '2024-01-28 11:30:00', '2024-02-11 11:30:00', '2024-02-09 15:45:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-01-30 16:15:00', '2024-02-13 16:15:00', '2024-02-11 12:30:00');
+INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-02-02 14:00:00', '2024-02-16 14:00:00', '2024-02-14 10:00:00');
 
+-- Table: loan_books
 CREATE TABLE IF NOT EXISTS loan_books (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     loan_id BIGINT NOT NULL,
     book_id BIGINT NOT NULL,
+    PRIMARY KEY (loan_id, book_id),
     FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE,
     FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
 );
+INSERT INTO loan_books (loan_id, book_id) VALUES (1, 1);
+INSERT INTO loan_books (loan_id, book_id) VALUES (2, 5);
+INSERT INTO loan_books (loan_id, book_id) VALUES (3, 8);
+INSERT INTO loan_books (loan_id, book_id) VALUES (4, 12);
+INSERT INTO loan_books (loan_id, book_id) VALUES (5, 15);
+INSERT INTO loan_books (loan_id, book_id) VALUES (6, 20);
+INSERT INTO loan_books (loan_id, book_id) VALUES (7, 25);
+INSERT INTO loan_books (loan_id, book_id) VALUES (8, 30);
+INSERT INTO loan_books (loan_id, book_id) VALUES (9, 35);
+INSERT INTO loan_books (loan_id, book_id) VALUES (10, 40);
+INSERT INTO loan_books (loan_id, book_id) VALUES (1, 2);
+INSERT INTO loan_books (loan_id, book_id) VALUES (2, 7);
+INSERT INTO loan_books (loan_id, book_id) VALUES (3, 11);
+INSERT INTO loan_books (loan_id, book_id) VALUES (4, 16);
+INSERT INTO loan_books (loan_id, book_id) VALUES (5, 21);
+INSERT INTO loan_books (loan_id, book_id) VALUES (6, 26);
+INSERT INTO loan_books (loan_id, book_id) VALUES (7, 31);
+INSERT INTO loan_books (loan_id, book_id) VALUES (8, 36);
+INSERT INTO loan_books (loan_id, book_id) VALUES (9, 41);
+INSERT INTO loan_books (loan_id, book_id) VALUES (10, 45);
+INSERT INTO loan_books (loan_id, book_id) VALUES (1, 3);
+INSERT INTO loan_books (loan_id, book_id) VALUES (2, 6);
+INSERT INTO loan_books (loan_id, book_id) VALUES (3, 9);
+INSERT INTO loan_books (loan_id, book_id) VALUES (4, 14);
+INSERT INTO loan_books (loan_id, book_id) VALUES (5, 17);
+INSERT INTO loan_books (loan_id, book_id) VALUES (6, 22);
+INSERT INTO loan_books (loan_id, book_id) VALUES (7, 24);
+INSERT INTO loan_books (loan_id, book_id) VALUES (8, 28);
+INSERT INTO loan_books (loan_id, book_id) VALUES (9, 33);
+INSERT INTO loan_books (loan_id, book_id) VALUES (10, 38);
+INSERT INTO loan_books (loan_id, book_id) VALUES (1, 13);
+INSERT INTO loan_books (loan_id, book_id) VALUES (2, 27);
+INSERT INTO loan_books (loan_id, book_id) VALUES (3, 4);
+INSERT INTO loan_books (loan_id, book_id) VALUES (4, 18);
+INSERT INTO loan_books (loan_id, book_id) VALUES (5, 19);
+INSERT INTO loan_books (loan_id, book_id) VALUES (6, 23);
+INSERT INTO loan_books (loan_id, book_id) VALUES (7, 29);
+INSERT INTO loan_books (loan_id, book_id) VALUES (8, 32);
+INSERT INTO loan_books (loan_id, book_id) VALUES (9, 34);
+INSERT INTO loan_books (loan_id, book_id) VALUES (10, 37);
+INSERT INTO loan_books (loan_id, book_id) VALUES (1, 39);
+INSERT INTO loan_books (loan_id, book_id) VALUES (2, 42);
+INSERT INTO loan_books (loan_id, book_id) VALUES (3, 43);
+INSERT INTO loan_books (loan_id, book_id) VALUES (4, 44);
+INSERT INTO loan_books (loan_id, book_id) VALUES (5, 46);
+INSERT INTO loan_books (loan_id, book_id) VALUES (6, 47);
+INSERT INTO loan_books (loan_id, book_id) VALUES (7, 48);
+INSERT INTO loan_books (loan_id, book_id) VALUES (8, 49);
+INSERT INTO loan_books (loan_id, book_id) VALUES (9, 50);
+INSERT INTO loan_books (loan_id, book_id) VALUES (10, 10);
 
 COMMIT;

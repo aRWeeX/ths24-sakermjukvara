@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/loans")
 public class LoanController {
@@ -23,8 +25,17 @@ public class LoanController {
     }
 
     @PutMapping("/{loanId}/return")
-    public ResponseEntity<LoanResponseDto> returnLoan(@PathVariable Long loanId) {
+    public ResponseEntity<Map<String, Object>> returnLoan(@PathVariable Long loanId) {
         LoanResponseDto loanResponseDto = loanService.returnLoan(loanId);
-        return ResponseEntity.ok(loanResponseDto);
+
+        if (loanResponseDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Loan not found with ID: " + loanId));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Loan returned with ID: " + loanId,
+                "loan", loanResponseDto
+        ));
     }
 }
