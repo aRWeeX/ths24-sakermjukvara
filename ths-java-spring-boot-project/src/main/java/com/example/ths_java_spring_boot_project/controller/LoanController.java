@@ -1,5 +1,6 @@
 package com.example.ths_java_spring_boot_project.controller;
 
+import com.example.ths_java_spring_boot_project.payload.ApiResponse;
 import com.example.ths_java_spring_boot_project.dto.LoanRequestDto;
 import com.example.ths_java_spring_boot_project.dto.LoanResponseDto;
 import com.example.ths_java_spring_boot_project.service.LoanService;
@@ -19,9 +20,9 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanResponseDto> issueLoan(@RequestBody LoanRequestDto loanRequestDto) {
+    public ResponseEntity<ApiResponse<LoanResponseDto>> issueLoan(@RequestBody LoanRequestDto loanRequestDto) {
         LoanResponseDto loanResponseDto = loanService.issueLoan(loanRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(loanResponseDto);
+        return new ResponseEntity<>(new ApiResponse<>("Loan issued", loanResponseDto), (HttpStatus.CREATED));
     }
 
     @PutMapping("/{loanId}/return")
