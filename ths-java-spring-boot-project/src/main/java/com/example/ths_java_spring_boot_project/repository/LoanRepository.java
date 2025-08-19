@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface LoanRepository extends JpaRepository<Loan, Long> {
     @Query("""
@@ -16,7 +17,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
         FROM Book b
         WHERE b.id = :bookId
     """)
-    boolean isBookAvailable(@Param("bookId") Long bookId);
+    Optional<Boolean> isBookAvailable(@Param("bookId") Long bookId);
 
     @Query("""
         SELECT l
