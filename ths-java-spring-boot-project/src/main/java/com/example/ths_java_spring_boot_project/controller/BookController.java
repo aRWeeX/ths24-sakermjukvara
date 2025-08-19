@@ -3,11 +3,12 @@ package com.example.ths_java_spring_boot_project.controller;
 import com.example.ths_java_spring_boot_project.dto.BookDto;
 import com.example.ths_java_spring_boot_project.dto.BookWithDetailsDto;
 import com.example.ths_java_spring_boot_project.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -19,8 +20,12 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        List<BookDto> books = bookService.getAllBooks();
+    public ResponseEntity<Page<BookDto>> getBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @PageableDefault(size = 10, sort = "title") Pageable pageable
+    ) {
+        Page<BookDto> books = bookService.getBooks(title, author, pageable);
         return ResponseEntity.ok(books);
     }
 

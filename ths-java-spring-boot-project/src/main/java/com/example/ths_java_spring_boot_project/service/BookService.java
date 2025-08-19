@@ -8,12 +8,11 @@ import com.example.ths_java_spring_boot_project.entity.Book;
 import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundException;
 import com.example.ths_java_spring_boot_project.repository.AuthorRepository;
 import com.example.ths_java_spring_boot_project.repository.BookRepository;
-import org.hibernate.service.spi.ServiceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,20 +25,18 @@ public class BookService {
         this.authorRepository = authorRepository;
     }
 
-    public List<BookDto> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
+    public Page<BookDto> getBooks(String title, String author, Pageable pageable) {
+        Page<Book> page;
 
-        if (books == null) {
-            return Collections.emptyList();
+        if (title != null && !title.isEmpty()) {
+            page = bookRepository.findByTitleContainingIgnoreCase(title, pageable);
+        } else if (author != null && !author.isEmpty()) {
+            page = bookRepository.findByAuthorContainingIgnoreCase(author, pageable);
+        } else {
+            page = bookRepository.findAll(pageable);
         }
 
-        try {
-            return books.stream()
-                    .map(this::toBookDto)
-                    .toList();
-        } catch (Exception e) {
-            throw new ServiceException("An error occurred while retrieving books", e);
-        }
+        return page.map(this::toBookDto);
     }
 
     public BookDto getBookById(Long id) {
