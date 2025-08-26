@@ -128,7 +128,9 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    role VARCHAR(50) NOT NULL DEFAULT 'USER',
+    enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Anna', 'Andersson', 'anna.andersson@email.com', 'password123', '2024-01-15 10:30:00');
 INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Erik', 'Eriksson', 'erik.eriksson@email.com', 'password456', '2024-01-20 14:15:00');

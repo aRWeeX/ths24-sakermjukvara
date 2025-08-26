@@ -7,25 +7,32 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email")
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String hashedPassword;
 
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
+
+    @Column(nullable = false)
+    private String role = "USER";
+
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     public User() {}
 
@@ -39,13 +46,16 @@ public class User {
     }
 
     public User(Long id, String firstName, String lastName,
-                String email, String hashedPassword, LocalDateTime registrationDate) {
+                String email, String hashedPassword, LocalDateTime registrationDate,
+                String role, boolean enabled) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.hashedPassword = hashedPassword;
         this.registrationDate = registrationDate;
+        this.role = role;
+        this.enabled = enabled;
     }
 
     public Long getId() {
@@ -94,5 +104,21 @@ public class User {
 
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
