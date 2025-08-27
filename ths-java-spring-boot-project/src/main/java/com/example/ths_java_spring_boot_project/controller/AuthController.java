@@ -33,12 +33,29 @@ public class AuthController {
                                @RequestParam String password,
                                Model model) {
 
+        // Validate password strength
+        if (password.length() < 8) {
+            model.addAttribute("error", "Password length must be at least 8 characters");
+            return "signup";
+        }
+
+        if (!password.matches(".*[A-Z].*")) {
+            model.addAttribute("error", "Password must contain at least 1 capital letter");
+            return "signup";
+        }
+
+        if (!password.matches(".*[0-9].*")) {
+            model.addAttribute("error", "Password must contain at least 1 number");
+            return "signup";
+        }
+
         if (userRepository.existsByEmail(email)) {
             model.addAttribute("error", "User already exists: " + email);
             return "signup";
         }
 
         User newUser = new User();
+
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setEmail(email);

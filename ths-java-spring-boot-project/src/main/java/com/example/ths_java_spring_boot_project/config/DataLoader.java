@@ -21,6 +21,7 @@ public class DataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         User user1 = new User();
+
         user1.setFirstName("User");
         user1.setLastName("User");
         user1.setEmail("user@example.com");
@@ -29,6 +30,7 @@ public class DataLoader implements ApplicationRunner {
         user1.setEnabled(true);
 
         User user2 = new User();
+
         user2.setFirstName("Admin");
         user2.setLastName("Admin");
         user2.setEmail("admin@example.com");
