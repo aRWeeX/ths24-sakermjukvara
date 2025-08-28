@@ -132,16 +132,146 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(50) NOT NULL DEFAULT 'USER',
     enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Anna', 'Andersson', 'anna.andersson@email.com', 'password123', '2024-01-15 10:30:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Erik', 'Eriksson', 'erik.eriksson@email.com', 'password456', '2024-01-20 14:15:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Maria', 'Karlsson', 'maria.karlsson@email.com', 'password789', '2024-02-01 09:45:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Johan', 'Johansson', 'johan.johansson@email.com', 'secure123', '2024-02-10 16:20:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Emma', 'Svensson', 'emma.svensson@email.com', 'mypass456', '2024-02-15 11:00:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Oscar', 'Nilsson', 'oscar.nilsson@email.com', 'secret789', '2024-03-01 08:30:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Sofia', 'Larsson', 'sofia.larsson@email.com', 'pass1234', '2024-03-05 13:45:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Lucas', 'Olsson', 'lucas.olsson@email.com', 'mykey567', '2024-03-10 15:30:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('Astrid', 'Persson', 'astrid.persson@email.com', 'pwd890', '2024-03-15 12:15:00');
-INSERT INTO users (first_name, last_name, email, password, registration_date) VALUES ('William', 'Gustafsson', 'william.gustafsson@email.com', 'login123', '2024-03-20 17:00:00');
+-- Original password: password123
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Anna',
+    'Andersson',
+    'anna.andersson@email.com',
+    '$2a$10$aEMMt8.z52Yp3Pj8Deb6.enaAbK/pb.42Ki4koQBdhVnTlAZm/kEm',
+    '2024-01-15 10:30:00'
+);
+-- Original password: password456
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Erik',
+    'Eriksson',
+    'erik.eriksson@email.com',
+    '$2a$10$M5cJOUxLDgMZvC0D7julPORsXL7tk7J02g10JEGyus2sEiMvjywF2',
+    '2024-01-20 14:15:00'
+);
+-- Original password: password789
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Maria',
+    'Karlsson',
+    'maria.karlsson@email.com',
+    '$2a$10$mkOSsLynCNDqbo1as7RsQ.9FflexKSrXBwEYM9980XpYpT8nz6SGi',
+    '2024-02-01 09:45:00'
+);
+-- Original password: secure123
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Johan',
+    'Johansson',
+    'johan.johansson@email.com',
+    '$2a$10$quCFCmOheZD6CkeXht4HbePMzeZhQ5B.gAnnsRTR1IHNMZQFDE/3y',
+    '2024-02-10 16:20:00'
+);
+-- Original password: mypass456
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Emma',
+    'Svensson',
+    'emma.svensson@email.com',
+    '$2a$10$pe/okB8nt3AhCNxs6YlKTuUSic909EB8/XmfXpdFk.kSAg7w/tbde',
+    '2024-02-15 11:00:00'
+);
+-- Original password: secret789
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Oscar',
+    'Nilsson',
+    'oscar.nilsson@email.com',
+    '$2a$10$G.ZyWDfoQOhNr..AN6YJa.nmhwsdwMS6K4jeAGT2HzLzlIlbODwhG',
+    '2024-03-01 08:30:00'
+);
+-- Original password: pass1234
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Sofia',
+    'Larsson',
+    'sofia.larsson@email.com',
+    '$2a$10$4IScVaI7e7soFZPAx8LcZeTxA0p7J/9ngyKu02r6NY9asX8GXv8FC',
+    '2024-03-05 13:45:00'
+);
+-- Original password: mykey567
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Lucas',
+    'Olsson',
+    'lucas.olsson@email.com',
+    '$2a$10$4XSvFRTCUZAhoFmpOBYH2.RgpVC6Q1ZUrfnBTkpPOHpQwQM05MK/K',
+    '2024-03-10 15:30:00'
+);
+-- Original password: pwd890
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'Astrid',
+    'Persson',
+    'astrid.persson@email.com',
+    '$2a$10$q9a2Rn9Y9aB871sTXMdqy.51Muxh3fzz6iMF8Ec1LwuQ/0wol0a4a',
+    '2024-03-15 12:15:00'
+);
+-- Original password: login123
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date
+) VALUES (
+    'William',
+    'Gustafsson',
+    'william.gustafsson@email.com',
+    '$2a$10$QEzC8NQUgvh9oflKdZW/w.Oy6j1Z5vdHs2R31tzixIHYQm6K6.5Ey',
+    '2024-03-20 17:00:00'
+);
 
 -- Table: loans
 CREATE TABLE IF NOT EXISTS loans (
