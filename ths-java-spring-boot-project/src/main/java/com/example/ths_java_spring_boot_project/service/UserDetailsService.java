@@ -3,16 +3,15 @@ package com.example.ths_java_spring_boot_project.service;
 import com.example.ths_java_spring_boot_project.entity.User;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public UserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
