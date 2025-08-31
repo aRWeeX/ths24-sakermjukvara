@@ -9,6 +9,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    boolean existsByEmail(String email);
+    // Spring Security needs to find users via email
     Optional<User> findByEmail(String email);
+
+    // Useful for checking if email already exists
+    boolean existsByEmail(String email);
 }
