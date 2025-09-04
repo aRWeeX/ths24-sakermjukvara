@@ -71,10 +71,4 @@ public class AuthController {
     public String showLoginForm() {
         return "login";
     }
-
-    @GetMapping("/dashboard")
-    public String dashboard(Authentication auth, Model model) {
-        model.addAttribute("email", auth.getName());
-        return "dashboard";
-    }
 }
