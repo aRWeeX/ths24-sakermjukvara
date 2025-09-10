@@ -1,15 +1,30 @@
 package com.example.ths_java_spring_boot_project.config;
 
+import com.example.ths_java_spring_boot_project.security.jwt.AuthTokenFilter;
+import com.example.ths_java_spring_boot_project.security.jwt.JwtUtils;
+import com.example.ths_java_spring_boot_project.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @Order(1)
 public class ApiSecurityConfig {
+
+    private final CustomUserDetailsService userDetailsService;
+
+    public ApiSecurityConfig(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter(JwtUtils jwtUtils) {
+        return new AuthTokenFilter(jwtUtils, userDetailsService);
+    }
 
     /*
      ✅ Recommended config order
@@ -37,7 +52,7 @@ public class ApiSecurityConfig {
      */
 
     @Bean
-    public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiSecurity(HttpSecurity http, AuthTokenFilter authTokenFilter) throws Exception {
         http
                 .securityMatcher("/api/**")  // Only applies to API endpoints
                 .csrf(csrf -> csrf.disable())  // Disable CSRF for stateless APIs
@@ -45,10 +60,12 @@ public class ApiSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )  // Stateless session
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/profile").hasRole("USER")
                         .requestMatchers("/api/books/**").hasRole("USER")  // Requires USER (or ADMIN via hierarchy)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Admin requires role
                         .requestMatchers("/api/**").hasRole("ADMIN")  // All other API endpoints admin only
-                );
+                )
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

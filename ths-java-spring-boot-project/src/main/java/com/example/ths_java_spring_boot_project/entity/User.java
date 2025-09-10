@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
 
+    // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -35,30 +36,12 @@ public class User {
     private boolean enabled = true;
 
     // Constructors
-    public User() {}
+    protected User() {}
 
     public User(String firstName, String lastName, String email,
-                String hashedPassword, LocalDateTime registrationDate) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.hashedPassword = hashedPassword;
-        this.registrationDate = registrationDate;
-    }
-
-    public User(String firstName, String lastName, String email,
-                String hashedPassword, String role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.hashedPassword = hashedPassword;
-        this.role = role;
-    }
-
-    public User(Long id, String firstName, String lastName,
-                String email, String hashedPassword, LocalDateTime registrationDate,
+                String hashedPassword, LocalDateTime registrationDate,
                 String role, boolean enabled) {
-        this.id = id;
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -68,7 +51,11 @@ public class User {
         this.enabled = enabled;
     }
 
-    // Getters and Setters
+    public User(String firstName, String lastName, String email, String hashedPassword) {
+        this(firstName, lastName, email, hashedPassword, LocalDateTime.now(), "USER", true);
+    }
+
+    // Getters & Setters
     public Long getId() {
         return id;
     }

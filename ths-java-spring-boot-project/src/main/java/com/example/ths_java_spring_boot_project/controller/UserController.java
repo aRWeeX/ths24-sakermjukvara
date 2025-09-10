@@ -5,14 +5,15 @@ import com.example.ths_java_spring_boot_project.dto.UserResponseDto;
 import com.example.ths_java_spring_boot_project.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -41,13 +42,21 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
             @RequestBody UserRequestDto userRequestDto) {
+
         UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
-        userService.getUserById(id);
+        userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponseDto> getUserProfile(Authentication authentication) {
+        String username = authentication.getName();
+        UserResponseDto response = userService.getUserByEmail(username);
+        return ResponseEntity.ok(response);
     }
 }

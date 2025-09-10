@@ -2,7 +2,6 @@ package com.example.ths_java_spring_boot_project.controller;
 
 import com.example.ths_java_spring_boot_project.entity.User;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,16 +53,14 @@ public class AuthController {
             return "signup";
         }
 
-        User newUser = new User();
-
-        newUser.setFirstName(firstName);
-        newUser.setLastName(lastName);
-        newUser.setEmail(email);
-        newUser.setHashedPassword(passwordEncoder.encode(password));
-        newUser.setRole("USER");
+        User newUser = new User(
+                firstName,
+                lastName,
+                email,
+                passwordEncoder.encode(password)
+        );
 
         userRepository.save(newUser);
-
         return "redirect:/login?registered";
     }
 
