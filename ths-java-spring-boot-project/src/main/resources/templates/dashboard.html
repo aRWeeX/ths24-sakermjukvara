@@ -1,14 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
+    <meta charset="UTF-8">
     <title>Dashboard</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'none';  // Hide previous error
+
+            // Get JWT token from localStorage
+            const token = localStorage.getItem('jwt_token');
+
+            // If no token, redirect to login page
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Fetch user profile from API
+                const response = await fetch('/api/users/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                // Handle unauthorized or failed response
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token invalid or expired, redirect to login
+                        window.location.href = '/login.html';
+                        return;
+                    }
+
+                    throw new Error(`Failed to load profile: ${response.status}`);
+                }
+
+                // Update dashboard with user email
+                const profile = await response.json();
+                document.getElementById('userEmail').textContent = profile.email;
+            } catch (error) {
+                // Display error message to the user
+                errorDiv.innerText = error.message;
+                errorDiv.style.color = 'red';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Logout function: remove token and redirect to login
+        function logout() {
+            localStorage.removeItem('jwt_token');
+            window.location.href = '/login.html';
+        }
+    </script>
 </head>
 <body>
-<h2>Dashboard</h2>
-<p>Welcome, <span th:text="${email}"></span>!</p>
+    <h2>Dashboard</h2>
+    <p>Welcome, <span id="userEmail">loading...</span>!</p>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+    <!-- Error messages appear here -->
+    <div id="error" style="display:none;"></div>
+
+    <!-- Logout button -->
+    <button onclick="logout()">Logout</button>
 </body>
 </html>

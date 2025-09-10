@@ -1,30 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
+    <meta charset="UTF-8">
     <title>Login</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Listen for form submission
+            document.getElementById('loginForm').addEventListener('submit', function(event) {
+                event.preventDefault();  // Prevent default form reload
+                login();
+            });
+        });
+
+        async function login() {
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'none' // Hide previous error
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Send login request to API
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                // Handle unsuccessful response
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Login failed');
+                }
+
+                // Extract JWT token from response
+                const result = await response.json();
+                localStorage.setItem('jwt_token', result.token);  // Save token
+
+                // Redirect to dashboard after successful login
+                window.location.href = '/dashboard.html';
+            } catch (error) {
+                // Display error message to the user
+                errorDiv.innerText = error.message;
+                errorDiv.style.color = 'red';
+                errorDiv.style.display = 'block';
+            }
+        }
+    </script>
 </head>
 <body>
-<h2>Login</h2>
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label>Email: <input type="email" id="username" name="username" required/></label><br/>
+        <label>Password: <input type="password" id="password" name="password" required/></label><br/>
+        <label><input type="checkbox" name="remember-me"/> Remember me</label><br/>
+        <button type="submit">Login</button>
+    </form>
 
-<form th:action="@{/login}" method="post">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <!-- Error messages appear here -->
+    <div id="error" style="display:none;"></div>
 
-    <label>Email: <input type="email" name="username" required
-                         th:value="${param.username}"/></label><br/>
-    <label>Password: <input type="password" name="password" required/></label><br/>
-
-    <label>
-        <input type="checkbox" name="remember-me"
-               th:checked="${param['remember-me']}"/> Remember me
-    </label><br/>
-
-    <button type="submit">Login</button>
-</form>
-
-<div th:if="${param.error}" style="color:red;">Invalid email or password.</div>
-<div th:if="${param.logout}" style="color:green;">You have been logged out.</div>
-<div th:if="${param.registered}" style="color:green;">Registration successful. Please log in.</div>
-
-<p>Don't have an account? <a th:href="@{/signup}">Sign up</a></p>
+    <p>Don't have an account? <a href="/signup.html">Sign up</a></p>
 </body>
 </html>

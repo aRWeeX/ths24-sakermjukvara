@@ -11,6 +11,8 @@ import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import com.example.ths_java_spring_boot_project.service.LoanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +24,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 public class LoanServiceTest {
     private LoanRepository loanRepository;
     private UserRepository userRepository;
     private BookRepository bookRepository;
     private LoanService loanService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -36,14 +41,19 @@ public class LoanServiceTest {
         loanService = new LoanService(loanRepository, userRepository, bookRepository);
     }
 
+    public LoanServiceTest(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Test
     public void testIssueLoan_success() {
         // Arrange - Test data
-        User user = new User();
-        user.setId(1L);
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("john.doe@example.com");
+        User user = new User(
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                passwordEncoder.encode(passwordEncoder.encode("password123¤"))
+        );
 
         Book book = new Book();
         book.setId(1L);
