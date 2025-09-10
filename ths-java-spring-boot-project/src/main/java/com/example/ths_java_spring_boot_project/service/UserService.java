@@ -9,7 +9,6 @@ import org.hibernate.service.spi.ServiceException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,10 +43,17 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
 
+    public UserResponseDto getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(this::toUserResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         validateUser(userRequestDto);
         String hashedPassword = hashPassword(userRequestDto.getPlainPassword());
         User savedUser = userRepository.save(toUserEntity(userRequestDto, hashedPassword));
+
         return toUserResponseDto(savedUser);
     }
 
@@ -60,6 +66,7 @@ public class UserService {
         }
 
         User user = optionalUser.get();
+
         user.setFirstName(updatedUser.getFirstName());
         user.setLastName(updatedUser.getLastName());
         user.setEmail(updatedUser.getEmail());
@@ -74,7 +81,7 @@ public class UserService {
 
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User does not exist with ID: " + id);
+            throw new ResourceNotFoundException("User with ID " + id + " does not exist.");
         }
 
         userRepository.deleteById(id);
@@ -95,8 +102,7 @@ public class UserService {
                 userRequestDto.getFirstName(),
                 userRequestDto.getLastName(),
                 userRequestDto.getEmail(),
-                hashedPassword,
-                LocalDateTime.now()
+                hashedPassword
         );
     }
 

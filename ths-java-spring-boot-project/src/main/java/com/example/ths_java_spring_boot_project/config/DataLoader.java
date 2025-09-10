@@ -20,23 +20,19 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        User user1 = new User();
+        User user1 = new User(
+                "User",
+                "User",
+                "user@example.com",
+                passwordEncoder.encode("user123")
+        );
 
-        user1.setFirstName("User");
-        user1.setLastName("User");
-        user1.setEmail("user@example.com");
-        user1.setHashedPassword(passwordEncoder.encode("user123"));
-        user1.setRole("USER");
-        user1.setEnabled(true);
-
-        User user2 = new User();
-
-        user2.setFirstName("Admin");
-        user2.setLastName("Admin");
-        user2.setEmail("admin@example.com");
-        user2.setHashedPassword(passwordEncoder.encode("admin123"));
-        user2.setRole("ADMIN");
-        user2.setEnabled(true);
+        User user2 = new User(
+                "Admin",
+                "Admin",
+                "admin@example.com",
+                passwordEncoder.encode("admin123")
+        );
 
         userRepository.save(user1);
         userRepository.save(user2);

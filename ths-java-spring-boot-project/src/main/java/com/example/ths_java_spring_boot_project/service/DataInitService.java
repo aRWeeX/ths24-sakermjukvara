@@ -21,24 +21,24 @@ public class DataInitService {
     public void initData() {
         // Create test users if they don't exist
         if (!userRepository.existsByEmail("user@test.com")) {
-            User user = new User();
-            user.setFirstName("Test");
-            user.setLastName("User");
-            user.setEmail("user@test.com");
-            user.setHashedPassword(passwordEncoder.encode("password123"));
-            user.setRole("USER");
-            user.setEnabled(true);
+            User user = new User(
+                    "Test",
+                    "User",
+                    "user@test.com",
+                    passwordEncoder.encode("password123")
+            );
+
             userRepository.save(user);
         }
 
         if (!userRepository.existsByEmail("admin@test.com")) {
-            User user = new User();
-            user.setFirstName("Test");
-            user.setLastName("Admin");
-            user.setEmail("admin@test.com");
-            user.setHashedPassword(passwordEncoder.encode("admin123"));
-            user.setRole("ADMIN");
-            user.setEnabled(true);
+            User user = new User(
+                    "Test",
+                    "Admin",
+                    "admin@test.com",
+                    passwordEncoder.encode("admin123")
+            );
+
             userRepository.save(user);
         }
 
