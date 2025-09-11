@@ -13,8 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-@RequestMapping("/admin")
+//@Controller
+//@RequestMapping("/admin")
+@Deprecated  // Not used anymore, kept only for reference
 public class SessionAdminController {
 
     private final SessionRegistry sessionRegistry;
