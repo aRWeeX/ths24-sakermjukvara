@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
  * @param id Fields
  */
 public record UserResponseDto(Long id, String firstName, String lastName, String email,
-                              LocalDateTime registrationDate) {
+                              LocalDateTime registrationDate, String role) {
     // Constructors
 }

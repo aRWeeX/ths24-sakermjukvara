@@ -93,7 +93,8 @@ public class UserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getRegistrationDate()
+                user.getRegistrationDate(),
+                user.getRole()
         );
     }
 

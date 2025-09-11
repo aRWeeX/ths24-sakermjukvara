@@ -58,6 +58,9 @@ public class ApiSecurityConfig {
 
                 // Role-based access control
                 .authorizeHttpRequests(authz -> authz
+                        // Public auth endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+
                         // USERs can access only their profile and book APIs
                         .requestMatchers("/api/users/profile").hasRole("USER")
                         .requestMatchers("/api/books/**").hasRole("USER")

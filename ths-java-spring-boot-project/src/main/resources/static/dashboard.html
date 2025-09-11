@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <style>
+        /* Style for error messages */
+        .error {
+            display: none;
+            color: red;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const errorDiv = document.getElementById('error');
@@ -27,6 +34,7 @@
                 if (!response.ok) {
                     if (response.status === 401) {
                         // Token invalid or expired, redirect to login
+                        localStorage.removeItem('jwt_token');
                         window.location.href = '/login.html';
                         return;
                     }
@@ -34,13 +42,18 @@
                     throw new Error(`Failed to load profile: ${response.status}`);
                 }
 
-                // Update dashboard with user email
+                // Populate dashboard with profile info
                 const profile = await response.json();
                 document.getElementById('userEmail').textContent = profile.email;
+                document.getElementById('userFirstName').textContent = profile.firstName;
+                document.getElementById('userLastName').textContent = profile.lastName;
+                // Unresolved variable registrationDate - only IDE warning
+                document.getElementById('userRegistrationDate').textContent = profile.registrationDate;
+                document.getElementById('userRole').textContent = profile.role;
+                document.getElementById('userFirstName2').textContent = profile.firstName;
             } catch (error) {
                 // Display error message to the user
                 errorDiv.innerText = error.message;
-                errorDiv.style.color = 'red';
                 errorDiv.style.display = 'block';
             }
         });
@@ -53,13 +66,22 @@
     </script>
 </head>
 <body>
-    <h2>Dashboard</h2>
-    <p>Welcome, <span id="userEmail">loading...</span>!</p>
+    <header>
+        <h2>Dashboard</h2>
+        <!-- Logout button -->
+        <button onclick="logout()">Logout</button>
+        <p>Welcome, <span id="userFirstName">loading...</span>!</p>
+    </header>
+
+    <main>
+        <p><strong>Email:</strong> <span id="userEmail">loading...</span></p>
+        <p><strong>First name:</strong> <span id="userFirstName2">loading...</span></p>
+        <p><strong>Last name:</strong> <span id="userLastName">loading...</span></p>
+        <p><strong>Role:</strong> <span id="userRole">loading...</span></p>
+        <p><strong>Member since:</strong> <span id="userRegistrationDate">loading...</span></p>
+    </main>
 
     <!-- Error messages appear here -->
-    <div id="error" style="display:none;"></div>
-
-    <!-- Logout button -->
-    <button onclick="logout()">Logout</button>
+    <div id="error" class="error"></div>
 </body>
 </html>
