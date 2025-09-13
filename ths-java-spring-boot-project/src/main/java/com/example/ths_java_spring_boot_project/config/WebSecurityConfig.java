@@ -31,11 +31,14 @@ public class WebSecurityConfig {
 
                 // Role/authorization configuration
                 .authorizeHttpRequests(authz -> authz
-                        // Allow static pages like login and signup
-                        .requestMatchers("/dashboard.html", "/login.html", "/signup.html", "/css/**", "/js/**").permitAll()
+                        // Public
+                        .requestMatchers("/css/**", "/js/**", "/login", "/signup").permitAll()
 
                         // Allow anyone to access H2 console
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        // Protected pages
+                        .requestMatchers("/dashboard").authenticated()
 
                         // Require login for all other pages
                         .anyRequest().authenticated()

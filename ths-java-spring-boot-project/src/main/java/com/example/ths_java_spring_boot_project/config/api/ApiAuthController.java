@@ -4,7 +4,7 @@ import com.example.ths_java_spring_boot_project.entity.User;
 import com.example.ths_java_spring_boot_project.payload.ApiResponse;
 import com.example.ths_java_spring_boot_project.payload.JwtResponse;
 import com.example.ths_java_spring_boot_project.payload.LoginRequest;
-import com.example.ths_java_spring_boot_project.payload.SignupRequest;
+import com.example.ths_java_spring_boot_project.payload.RegisterRequest;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import com.example.ths_java_spring_boot_project.security.jwt.JwtUtils;
 import org.springframework.http.ResponseEntity;
@@ -60,17 +60,17 @@ public class ApiAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse<>("Error: Email is already registered!", null));
         }
 
         User user = new User(
-                signupRequest.getFirstName(),
-                signupRequest.getLastName(),
-                signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword())
+                registerRequest.getFirstName(),
+                registerRequest.getLastName(),
+                registerRequest.getEmail(),
+                passwordEncoder.encode(registerRequest.getPassword())
         );
 
         userRepository.save(user);

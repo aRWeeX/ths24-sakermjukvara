@@ -1,6 +1,6 @@
 package com.example.ths_java_spring_boot_project.payload;
 
-public class SignupRequest {
+public class RegisterRequest {
     // Fields
     private String firstName;
     private String lastName;
@@ -8,7 +8,7 @@ public class SignupRequest {
     private String password;
 
     // Constructors
-    public SignupRequest() {}
+    public RegisterRequest() {}
 
     // Getters & Setters
     public String getFirstName() {

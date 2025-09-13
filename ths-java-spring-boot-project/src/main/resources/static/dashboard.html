@@ -10,7 +10,10 @@
             color: red;
         }
     </style>
-    <script>
+    <script type="module">
+        import { formatDateTime } from "./js/datetime-utils.js";
+        import { logout } from "./js/auth.js";
+
         document.addEventListener('DOMContentLoaded', async () => {
             const errorDiv = document.getElementById('error');
             errorDiv.style.display = 'none';  // Hide previous error
@@ -48,7 +51,8 @@
                 document.getElementById('userFirstName').textContent = profile.firstName;
                 document.getElementById('userLastName').textContent = profile.lastName;
                 // Unresolved variable registrationDate - only IDE warning
-                document.getElementById('userRegistrationDate').textContent = profile.registrationDate;
+                document.getElementById('userRegistrationDate').textContent =
+                    formatDateTime(profile.registrationDate);
                 document.getElementById('userRole').textContent = profile.role;
                 document.getElementById('userFirstName2').textContent = profile.firstName;
             } catch (error) {
@@ -58,18 +62,18 @@
             }
         });
 
-        // Logout function: remove token and redirect to login
-        function logout() {
-            localStorage.removeItem('jwt_token');
-            window.location.href = '/login.html';
-        }
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            logout();
+        });
     </script>
 </head>
 <body>
     <header>
         <h2>Dashboard</h2>
+
         <!-- Logout button -->
-        <button onclick="logout()">Logout</button>
+        <button id="logoutButton">Logout</button>
+
         <p>Welcome, <span id="userFirstName">loading...</span>!</p>
     </header>
 
