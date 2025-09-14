@@ -50,7 +50,7 @@ public class UserService {
     }
 
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
-        validateUser(userRequestDto);
+//        validateUser(userRequestDto);
         String hashedPassword = hashPassword(userRequestDto.getPlainPassword());
         User savedUser = userRepository.save(toUserEntity(userRequestDto, hashedPassword));
 
@@ -58,7 +58,7 @@ public class UserService {
     }
 
     public UserResponseDto updateUser(Long id, UserRequestDto updatedUser) {
-        validateUser(updatedUser);
+//        validateUser(updatedUser);
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (optionalUser.isEmpty()) {
@@ -113,39 +113,5 @@ public class UserService {
 
     private boolean checkPassword(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
-    }
-
-    private void validateUser(UserRequestDto userRequestDto) {
-        if (userRequestDto.getFirstName() == null || userRequestDto.getFirstName().trim().isEmpty()) {
-            throw new IllegalArgumentException("First name is required");
-        }
-
-        if (userRequestDto.getLastName() == null || userRequestDto.getLastName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Last name is required");
-        }
-
-        String email = userRequestDto.getEmail();
-
-        if (email == null || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-
-        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered");
-        }
-
-        String password = userRequestDto.getPlainPassword();
-
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password is required");
-        }
-
-        if (password.length() < 8) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long");
-        }
-
-        if (!password.matches(".*[A-Za-z].*") || !password.matches(".*\\d.*")) {
-            throw new IllegalArgumentException("Password must contain letters and numbers");
-        }
     }
 }
