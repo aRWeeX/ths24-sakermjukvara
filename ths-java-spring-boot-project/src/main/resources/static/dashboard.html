@@ -3,42 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <style>
-        /* Style for error messages */
-        .error {
-            display: none;
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
     <script type="module">
+        import { apiFetch } from "./js/apiFetch.js";
         import { formatDateTime } from "./js/datetime-utils.js";
         import { logout } from "./js/auth.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
             const errorDiv = document.getElementById('error');
-            errorDiv.style.display = 'none';  // Hide previous error
+            errorDiv.style.display = 'none';  // hide previous error
 
             // Get JWT token from localStorage
             const token = localStorage.getItem('jwt_token');
 
             // If no token, redirect to login page
             if (!token) {
-                window.location.href = '/login.html';
+                window.location.href = '/login';
                 return;
             }
 
             try {
                 // Fetch user profile from API
-                const response = await fetch('/api/users/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await apiFetch('/api/users/profile');
 
                 // Handle unauthorized or failed response
                 if (!response.ok) {
                     if (response.status === 401) {
                         // Token invalid or expired, redirect to login
                         localStorage.removeItem('jwt_token');
-                        window.location.href = '/login.html';
+                        window.location.href = '/login';
                         return;
                     }
 

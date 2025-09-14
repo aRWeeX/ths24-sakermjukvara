@@ -32,13 +32,10 @@ public class WebSecurityConfig {
                 // Role/authorization configuration
                 .authorizeHttpRequests(authz -> authz
                         // Public
-                        .requestMatchers("/css/**", "/js/**", "/login", "/signup").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/login", "/signup", "/dashboard").permitAll()
 
                         // Allow anyone to access H2 console
                         .requestMatchers("/h2-console/**").permitAll()
-
-                        // Protected pages
-                        .requestMatchers("/dashboard").authenticated()
 
                         // Require login for all other pages
                         .anyRequest().authenticated()
