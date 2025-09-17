@@ -8,6 +8,7 @@
         import { apiFetch } from "./js/apiFetch.js";
         import { formatDateTime } from "./js/datetime-utils.js";
         import { logout } from "./js/auth.js";
+        import { setupBooksButton } from "./js/booksButton.js";
 
         document.addEventListener('DOMContentLoaded', async () => {
             const errorDiv = document.getElementById('error');
@@ -58,6 +59,8 @@
         document.getElementById('logoutButton').addEventListener('click', () => {
             logout();
         });
+
+        setupBooksButton("books-button", "books-list", "books-pagination");
     </script>
 </head>
 <body>
@@ -80,5 +83,12 @@
 
     <!-- Error messages appear here -->
     <div id="error" class="error"></div>
+
+    <div class="actions">
+        <h3>Actions</h3>
+        <button id="books-button">Books</button>
+        <ul id="books-list"></ul>
+        <div id="books-pagination"></div>
+    </div>
 </body>
 </html>

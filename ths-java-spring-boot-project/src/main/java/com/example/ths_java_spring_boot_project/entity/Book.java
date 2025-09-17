@@ -1,6 +1,7 @@
 package com.example.ths_java_spring_boot_project.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,9 @@ public class Book {
     @Column(name = "total_copies")
     private Integer totalCopies;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
+    @ManyToOne(optional = false)  // JPA: means the relationship is required
+    @JoinColumn(name = "author_id", nullable = false)  // DB: makes column NOT NULL
+    @NotNull  // Bean Validation: adds runtime + validation framework safety
     private Author author;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
