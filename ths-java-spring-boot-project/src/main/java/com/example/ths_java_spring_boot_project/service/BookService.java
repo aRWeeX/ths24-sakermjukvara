@@ -84,13 +84,25 @@ public class BookService {
     }
 
     private BookDto toBookDto(Book book) {
+        Long authorId = null;
+        String firstName = null;
+        String lastName = null;
+
+        if (book.getAuthor() != null) {
+            authorId = book.getAuthor().getId();
+            firstName = book.getAuthor().getFirstName();
+            lastName = book.getAuthor().getLastName();
+        }
+
         return new BookDto(
                 book.getId(),
                 book.getTitle(),
                 book.getPublicationYear(),
                 book.getAvailableCopies(),
                 book.getTotalCopies(),
-                book.getAuthor().getId()
+                authorId,
+                firstName,
+                lastName
         );
     }
 

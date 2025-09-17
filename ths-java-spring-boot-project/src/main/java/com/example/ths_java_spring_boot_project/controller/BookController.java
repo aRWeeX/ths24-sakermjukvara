@@ -2,6 +2,7 @@ package com.example.ths_java_spring_boot_project.controller;
 
 import com.example.ths_java_spring_boot_project.dto.BookDto;
 import com.example.ths_java_spring_boot_project.dto.BookWithDetailsDto;
+import com.example.ths_java_spring_boot_project.dto.PageDto;
 import com.example.ths_java_spring_boot_project.service.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+
     private final BookService bookService;
 
     public BookController(BookService bookService) {
@@ -20,13 +22,23 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> getBooks(
+    public ResponseEntity<PageDto<BookDto>> getBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
-            @PageableDefault(size = 10, sort = "title") Pageable pageable
+            @PageableDefault(size = 10, sort = "author.lastName") Pageable pageable
     ) {
         Page<BookDto> books = bookService.getBooks(title, author, pageable);
-        return ResponseEntity.ok(books);
+
+        PageDto<BookDto> pageDto = new PageDto<>(
+                books.getContent(),
+                books.getNumber(),
+                books.getSize(),
+                books.getTotalElements(),
+                books.getTotalPages(),
+                books.isLast()
+        );
+
+        return ResponseEntity.ok(pageDto);
     }
 
     @GetMapping("/{id}")
