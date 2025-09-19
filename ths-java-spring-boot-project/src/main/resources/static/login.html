@@ -1,49 +1,49 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="css/styles.css">
     <script type="module">
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener("DOMContentLoaded", function() {
             // Listen for form submission
-            document.getElementById('loginForm').addEventListener('submit', function(event) {
+            document.getElementById("loginForm").addEventListener("submit", function(event) {
                 event.preventDefault();  // prevent default form reload
                 login();
             });
         });
 
         async function login() {
-            const errorDiv = document.getElementById('error');
-            errorDiv.style.display = 'none'  // hide previous error
+            const errorDiv = document.getElementById("error");
+            errorDiv.style.display = "none"  // hide previous error
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
 
             try {
                 // Send login request to API
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, password }),
                 });
 
                 // Handle unsuccessful response
                 if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(error.message || 'Login failed');
+                    throw new Error(error.message || "Login failed");
                 }
 
                 // Extract JWT token from response
                 const data = await response.json();
-                localStorage.setItem('jwt_token', data.token);  // save token
+                localStorage.setItem("jwt_token", data.token);  // save token
 
                 // Redirect to dashboard after successful login
-                window.location.href = '/dashboard';
+                window.location.href = "/dashboard";
             } catch (error) {
                 // Display error message to the user
                 errorDiv.innerText = error.message;
-                errorDiv.style.display = 'block';
+                errorDiv.style.display = "block";
             }
         }
     </script>
