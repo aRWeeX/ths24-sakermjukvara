@@ -7,6 +7,8 @@ import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundExcept
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import org.hibernate.service.spi.ServiceException;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -21,21 +23,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserResponseDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-
-        if (users == null) {
-            return Collections.emptyList();
-        }
-
-        try {
-            return users.stream()
-                    .map(this::toUserResponseDto)
-                    .toList();
-        } catch (Exception e) {
-            throw new ServiceException("An error occurred while retrieving users", e);
-        }
+    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
+        Page<User> page;
+        page = userRepository.findAll(pageable);
+        return page.map(this::toUserResponseDto);
     }
+
+//    public List<UserResponseDto> getAllUsers() {
+//        return userRepository.findAll().stream()
+//                .map(this::toUserResponseDto)
+//                .toList();
+//    }
 
     public UserResponseDto getUserById(Long id) {
         return userRepository.findById(id)

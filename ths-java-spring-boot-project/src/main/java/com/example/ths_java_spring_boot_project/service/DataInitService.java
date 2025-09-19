@@ -39,6 +39,7 @@ public class DataInitService {
                     passwordEncoder.encode("admin123")
             );
 
+            user.setRole("ADMIN");
             userRepository.save(user);
         }
 

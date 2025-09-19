@@ -1,58 +1,66 @@
-// booksButton.js
+// resource-button.js
 
 import { apiFetch } from "./apiFetch.js";
 
-export function setupBooksButton(buttonId, listId, paginationId) {
+export function setupResourceButton(
+    buttonId, listId, paginationId, endpoint, renderItem, showCondition = () => true) {
+
     // Wait for DOM to be fully loaded
     document.addEventListener("DOMContentLoaded", () => {
-        const booksButton = document.getElementById(buttonId);
-        const booksList = document.getElementById(listId);
+        const resourceButton = document.getElementById(buttonId);
+        const resourceList = document.getElementById(listId);
         const paginationContainer = document.getElementById(paginationId);
 
-        if (!booksButton || !booksList || !paginationContainer) {
-            console.error("Books button, list, or pagination container not found");
+        if (!resourceButton || !resourceList || !paginationContainer) {
+            console.error(`${endpoint} button, list, or pagination container not found`);
+            return;
+        }
+
+        // Hide button if condition is false
+        if (!showCondition()) {
+            resourceButton.style.display = "none";
             return;
         }
 
         let currentPage = 0;
         const pageSize = 10;
 
-        // Load a page of books
-        async function loadBooks(page) {
-            booksList.innerHTML = "Loading...";
+        // Load a page of resource, endpoint
+        async function loadResource(page) {
+            resourceList.innerHTML = "Loading...";
 
             try {
                 paginationContainer.querySelectorAll("button")
                     .forEach(b => b.disabled = true);
 
-                const response = await apiFetch(`/api/books?page=${page}&size=${pageSize}`);
+                const response = await apiFetch(`/api/${endpoint}?page=${page}&size=${pageSize}`);
 
                 if (!response.ok) {
-                    console.error("Failed to fetch books:", response.status);
+                    console.error(`Failed to fetch ${endpoint}:`, response.status);
                     return;
                 }
 
-                const books = await response.json();  // PageDto<BookDto>
-                const booksArray = books.content;
+                const data = await response.json();  // PageDto
+                const items = data.content;
 
                 // Clear previous results
-                booksList.innerHTML = "";
+                resourceList.innerHTML = "";
 
-                // Render books
-                booksArray.forEach(book => {
+                // Render items
+                items.forEach(item => {
                     const li = document.createElement("li");
-                    li.textContent = `${book.title} by ${book.authorFirstName} ${book.authorLastName}`;
-                    booksList.appendChild(li);
+                    li.textContent = renderItem(item);
+                    resourceList.appendChild(li);
                 });
 
                 // Update current page and render pagination
                 currentPage = page;
-                renderPagination(currentPage, books.totalPages);
+                renderPagination(currentPage, data.totalPages);
 
-                booksList.scrollIntoView({ behavior: "smooth" });
+                resourceList.scrollIntoView({ behavior: "smooth" });
             } catch (error) {
-                booksList.innerHTML = "Error loading books.";
-                console.error("Error fetching books:", error);
+                resourceList.innerHTML = `Error loading ${endpoint}.`;
+                console.error(`Error fetching ${endpoint}:`, error);
             }
         }
 
@@ -66,7 +74,7 @@ export function setupBooksButton(buttonId, listId, paginationId) {
             prev.textContent = "Prev";
             prev.disabled = current === 0;
             prev.style.margin = "0 4px";
-            prev.addEventListener("click", () => loadBooks(current - 1));
+            prev.addEventListener("click", () => loadResource(current - 1));
 
             paginationContainer.appendChild(prev);
 
@@ -80,7 +88,7 @@ export function setupBooksButton(buttonId, listId, paginationId) {
                 // Highlight current page
                 button.style.fontWeight = i === current ? "bold" : "normal";
 
-                button.addEventListener("click", () => loadBooks(i));
+                button.addEventListener("click", () => loadResource(i));
                 paginationContainer.appendChild(button);
             }
 
@@ -90,12 +98,12 @@ export function setupBooksButton(buttonId, listId, paginationId) {
             next.textContent = "Next";
             next.disabled = current === total - 1;
             next.style.margin = "0 4px";
-            next.addEventListener("click", () => loadBooks(current + 1));
+            next.addEventListener("click", () => loadResource(current + 1));
 
             paginationContainer.appendChild(next);
         }
 
         // Initial load when button is clicked
-        booksButton.addEventListener("click", () => loadBooks(0))
+        resourceButton.addEventListener("click", () => loadResource(0))
     });
 }
