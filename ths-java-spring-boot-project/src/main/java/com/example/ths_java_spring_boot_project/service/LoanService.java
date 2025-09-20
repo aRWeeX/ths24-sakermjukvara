@@ -11,6 +11,8 @@ import com.example.ths_java_spring_boot_project.repository.BookRepository;
 import com.example.ths_java_spring_boot_project.repository.LoanRepository;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,11 @@ public class LoanService {
         this.loanRepository = loanRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+    }
+
+    public Page<LoanResponseDto> getAllLoans(Pageable pageable) {
+        return loanRepository.findAll(pageable)
+                .map(this::toLoanResponseDto);
     }
 
     @Transactional
@@ -76,10 +83,14 @@ public class LoanService {
     }
 
     private LoanResponseDto toLoanResponseDto(Loan loan) {
+        User user = loan.getUser();
+
         return new LoanResponseDto(
                 loan.getId(),
-                loan.getUser().getId(),
-                loan.getUser().getEmail(),
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
                 loan.getLoanBooks().stream()
                         .map(loanBook -> loanBook.getBook().getTitle())
                         .toList(),

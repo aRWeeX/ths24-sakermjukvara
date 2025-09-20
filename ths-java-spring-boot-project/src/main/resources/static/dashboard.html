@@ -62,8 +62,8 @@
         // Books
         setupResourceButton(
             "books-button",
-            "books-list",
-            "books-pagination",
+            "group-list",
+            "group-pagination",
             "books",
             book => `${book.title} by ${book.authorFirstName} ${book.authorLastName}`
         );
@@ -71,10 +71,27 @@
         // Users
         setupResourceButton(
             "users-button",
-            "users-list",
-            "users-pagination",
+            "group-list",
+            "group-pagination",
             "users",
             user => `${user.firstName} ${user.lastName} (${user.email})`,
+            () => isAdmin()
+        );
+
+        // Loans
+        setupResourceButton(
+            "loans-button",
+            "group-list",
+            "group-pagination",
+            "loans",
+            loan => `
+                <div class="loan">
+                    <strong>${loan.firstName} ${loan.lastName} (${loan.email})</strong>
+                    <p>Borrowed: ${loan.borrowDate}, Due: ${loan.dueDate}</p>
+                    <ul>
+                        ${loan.loanBooks.map(title => `<li>${title}</li>`).join("")}
+                    </ul>
+                </div>`,
             () => isAdmin()
         );
     </script>
@@ -100,21 +117,14 @@
 
     <div class="actions">
         <h3>Actions</h3>
+        <button id="books-button">Books</button>
+        <button id="users-button">Users</button>
+        <button id="loans-button">Loans</button>
 
-        <!-- Books section -->
         <div class="action-group">
-            <button id="books-button">Books</button>
-            <ul id="books-list"></ul>
-            <div id="books-pagination"></div>
+            <ul id="group-list"></ul>
+            <div id="group-pagination"></div>
         </div>
-
-        <!-- Users section -->
-        <div class="action-group">
-            <button id="users-button">Users</button>
-            <ul id="users-list"></ul>
-            <div id="users-pagination"></div>
-        </div>
-
     </div>
 </body>
 </html>
