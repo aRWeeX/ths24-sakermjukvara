@@ -49,7 +49,7 @@ export function setupResourceButton(
                 // Render items
                 items.forEach(item => {
                     const li = document.createElement("li");
-                    li.textContent = renderItem(item);
+                    li.innerHTML = renderItem(item);
                     resourceList.appendChild(li);
                 });
 

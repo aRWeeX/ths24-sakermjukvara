@@ -79,10 +79,10 @@ public class LoanServiceTest {
         // Assert
         assertNotNull(loanResponseDto);
 
-        assertEquals(user.getId(), loanResponseDto.getUserId());
-        assertEquals(List.of(book.getTitle()), loanResponseDto.getBookTitles());
+        assertEquals(user.getId(), loanResponseDto.userId());
+        assertEquals(List.of(book.getTitle()), loanResponseDto.loanBooks());
 
-        assertNotNull(loanResponseDto.getBorrowDate());
-        assertNotNull(loanResponseDto.getDueDate());
+        assertNotNull(loanResponseDto.borrowDate());
+        assertNotNull(loanResponseDto.dueDate());
     }
 }
