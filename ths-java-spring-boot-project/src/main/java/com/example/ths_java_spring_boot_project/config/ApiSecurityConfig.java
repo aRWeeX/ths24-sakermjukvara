@@ -1,5 +1,6 @@
 package com.example.ths_java_spring_boot_project.config;
 
+import com.example.ths_java_spring_boot_project.security.ApiAccessDeniedHandler;
 import com.example.ths_java_spring_boot_project.security.jwt.AuthTokenFilter;
 import com.example.ths_java_spring_boot_project.security.jwt.JwtUtils;
 import com.example.ths_java_spring_boot_project.service.CustomUserDetailsService;
@@ -43,7 +44,9 @@ public class ApiSecurityConfig {
      * Defines the security filter chain for API endpoints
      */
     @Bean
-    public SecurityFilterChain apiSecurity(HttpSecurity http, AuthTokenFilter authTokenFilter) throws Exception {
+    public SecurityFilterChain apiSecurity(HttpSecurity http, AuthTokenFilter authTokenFilter,
+                                           ApiAccessDeniedHandler apiAccessDeniedHandler) throws Exception {
+
         http
                 // Apply this configuration only to /api/** endpoints
                 .securityMatcher("/api/**")
@@ -98,7 +101,8 @@ public class ApiSecurityConfig {
                                 logger.error("Failed to write JSON response for unauthorized request", e);
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                             }
-                        })
+                        })  // 401 JSON
+                        .accessDeniedHandler(apiAccessDeniedHandler)  // 403 JSON
                 )
 
                 // Register the JWT filter before Spring Security's username/password filter

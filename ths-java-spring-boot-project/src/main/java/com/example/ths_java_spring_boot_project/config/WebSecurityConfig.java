@@ -1,5 +1,6 @@
 package com.example.ths_java_spring_boot_project.config;
 
+import com.example.ths_java_spring_boot_project.security.WebAccessDeniedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,9 @@ public class WebSecurityConfig {
      * Security configuration for web endpoints (non-API), e.g., H2 console
      */
     @Bean
-    public SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
+    public SecurityFilterChain webSecurity(HttpSecurity http, WebAccessDeniedHandler webAccessDeniedHandler)
+            throws Exception {
+
         http
                 // Allow frames from the same origin, needed for H2 console UI to work
                 .headers(headers -> headers
@@ -43,13 +46,7 @@ public class WebSecurityConfig {
 
                 // Handle unauthorized access with a friendly HTML page and logs the attempt
                 .exceptionHandling(ex -> ex
-                        .accessDeniedHandler((request,
-                                              response,
-                                              accessDeniedException) -> {
-
-                            logger.warn("Unauthorized access attempt to: {}", request.getRequestURI());
-                            response.sendRedirect("/access-denied");
-                        })
+                        .accessDeniedHandler(webAccessDeniedHandler)  // 403 HTML
                 );
 
         return http.build();
