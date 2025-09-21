@@ -30,6 +30,7 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
         <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -83,7 +84,25 @@
             <version>3.1.1</version>
         </dependency>
 
-		<dependency>
+        <!--
+        https://github.com/logfellow/logstash-logback-encoder
+
+
+        Provides logback encoders, layouts, and appenders to log in JSON and other formats supported by Jackson.
+
+        Supports both regular LoggingEvents (logged through a Logger) and AccessEvents (logged via logback-access).
+
+        Originally written to support output in logstash's JSON format, but has evolved into a highly-configurable,
+        general-purpose, structured logging mechanism for JSON and other Jackson dataformats. The structure of the
+        output, and the data it contains, is fully configurable.
+        -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>8.1</version>
+        </dependency>
+
+        <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
@@ -99,7 +118,6 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -111,7 +129,6 @@
             <scope>test</scope>
         </dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -120,5 +137,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
