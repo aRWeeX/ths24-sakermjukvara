@@ -9,6 +9,7 @@ import org.hibernate.service.spi.ServiceException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -23,6 +24,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         Page<User> page;
         page = userRepository.findAll(pageable);
@@ -35,18 +37,21 @@ public class UserService {
 //                .toList();
 //    }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public UserResponseDto getUserById(Long id) {
         return userRepository.findById(id)
                 .map(this::toUserResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #email == principal.username")
     public UserResponseDto getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(this::toUserResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
 //        validateUser(userRequestDto);
         String hashedPassword = hashPassword(userRequestDto.getPlainPassword());
@@ -55,6 +60,7 @@ public class UserService {
         return toUserResponseDto(savedUser);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDto updateUser(Long id, UserRequestDto updatedUser) {
 //        validateUser(updatedUser);
         Optional<User> optionalUser = userRepository.findById(id);
@@ -77,6 +83,7 @@ public class UserService {
         return toUserResponseDto(savedUser);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User with ID " + id + " does not exist.");

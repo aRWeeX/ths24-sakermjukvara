@@ -13,6 +13,7 @@ import com.example.ths_java_spring_boot_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@PreAuthorize("hasRole('ADMIN')")
 public class LoanService {
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;

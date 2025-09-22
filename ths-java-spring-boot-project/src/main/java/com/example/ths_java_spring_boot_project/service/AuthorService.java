@@ -5,10 +5,10 @@ import com.example.ths_java_spring_boot_project.entity.Author;
 import com.example.ths_java_spring_boot_project.exception.ResourceNotFoundException;
 import com.example.ths_java_spring_boot_project.repository.AuthorRepository;
 import org.hibernate.service.spi.ServiceException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +20,9 @@ public class AuthorService {
         this.authorRepository = authorRepository;
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<AuthorDto> getAllAuthors() {
         List<Author> authors = authorRepository.findAll();
-
-        if (authors == null) {
-            return Collections.emptyList();
-        }
 
         try {
             return authors.stream()
@@ -36,18 +33,21 @@ public class AuthorService {
         }
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public AuthorDto getAuthorById(Long id) {
         return authorRepository.findById(id)
                 .map(this::toAuthorDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AuthorDto createAuthor(AuthorDto authorDto) {
         validateAuthor(authorDto);
         Author savedAuthor = authorRepository.save(toAuthorEntity(authorDto));
         return toAuthorDto(savedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AuthorDto updateAuthor(Long id, AuthorDto updatedAuthor) {
         validateAuthor(updatedAuthor);
         Optional<Author> optionalAuthor = authorRepository.findById(id);
@@ -66,6 +66,7 @@ public class AuthorService {
         return toAuthorDto(savedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAuthorById(Long id) {
         if (!authorRepository.existsById(id)) {
             throw new ResourceNotFoundException("Author does not exist with ID: " + id);
