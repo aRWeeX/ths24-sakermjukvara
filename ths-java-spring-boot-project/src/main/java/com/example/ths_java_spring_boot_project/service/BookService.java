@@ -10,6 +10,7 @@ import com.example.ths_java_spring_boot_project.repository.AuthorRepository;
 import com.example.ths_java_spring_boot_project.repository.BookRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
@@ -25,6 +26,7 @@ public class BookService {
         this.authorRepository = authorRepository;
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Page<BookDto> getBooks(String title, String author, Pageable pageable) {
         Page<Book> page;
 
@@ -39,18 +41,21 @@ public class BookService {
         return page.map(this::toBookDto);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public BookDto getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(this::toBookDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public BookDto createBook(BookDto bookDto) {
         validateBook(bookDto);
         Book savedBook = bookRepository.save(toBookEntity(bookDto));
         return toBookDto(savedBook);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public BookDto updateBook(Long id, BookDto updatedBook) {
         validateBook(updatedBook);
         Optional<Book> optionalBook = bookRepository.findById(id);
@@ -75,6 +80,7 @@ public class BookService {
         return toBookDto(savedBook);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteBookById(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book does not exist with ID: " + id);
