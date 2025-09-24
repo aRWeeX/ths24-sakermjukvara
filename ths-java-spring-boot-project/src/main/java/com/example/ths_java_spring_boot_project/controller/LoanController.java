@@ -33,7 +33,8 @@ public class LoanController {
     @PostMapping
     public ResponseEntity<ApiResponse<LoanResponseDto>> issueLoan(@RequestBody LoanRequestDto loanRequestDto) {
         LoanResponseDto loanResponseDto = loanService.issueLoan(loanRequestDto);
-        return new ResponseEntity<>(new ApiResponse<>("Loan issued", loanResponseDto), (HttpStatus.CREATED));
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Loan issued", loanResponseDto), (HttpStatus.CREATED));
     }
 
     @PutMapping("/{loanId}/return")
