@@ -15,16 +15,16 @@ export function initSignupForm() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // Although IntelliJ warns that the data object may contain File,
-        // we only have text fields here, so all values are strings.
-        // It's safe to use URLSearchParams with this data.
-        const response = await fetch("/api/register", {
+        const response = await fetch("/api/auth/register", {
             method: "POST",
-            body: new URLSearchParams(data),
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
         });
 
         const result = await response.json();
-        const errorDiv = document.getElementById("errorDiv");
+        const errorDiv = document.getElementById("error");
         errorDiv.textContent = "";
 
         if (!response.ok) {

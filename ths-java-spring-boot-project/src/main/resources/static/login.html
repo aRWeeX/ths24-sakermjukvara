@@ -20,12 +20,19 @@
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
+            // Get the checkbox state
+            const rememberMeChecked = document.getElementById("remember-me").checked;
+
             try {
                 // Send login request to API
                 const response = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        rememberMe: rememberMeChecked
+                    })
                 });
 
                 // Handle unsuccessful response
@@ -36,7 +43,7 @@
 
                 // Extract JWT token from response
                 const data = await response.json();
-                localStorage.setItem("jwt_token", data.token);  // save token
+                localStorage.setItem("jwt_token", data.accessToken);  // save token
 
                 // Redirect to dashboard after successful login
                 window.location.href = "/dashboard";
@@ -57,7 +64,7 @@
         <form id="loginForm">
             <label>Email: <input type="email" id="username" name="username" required/></label><br/>
             <label>Password: <input type="password" id="password" name="password" required/></label><br/>
-            <label><input type="checkbox" name="remember-me"/> Remember me</label><br/>
+            <label><input type="checkbox" id="remember-me" name="remember-me"/> Remember me</label><br/>
             <button type="submit">Login</button>
         </form>
     </main>
