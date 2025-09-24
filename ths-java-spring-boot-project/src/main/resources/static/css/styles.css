@@ -1,6 +1,7 @@
 /* styles.css */
 
 .error {
-    display: none;
     color: red;
+    display: none;
+    margin-top: 1em;
 }

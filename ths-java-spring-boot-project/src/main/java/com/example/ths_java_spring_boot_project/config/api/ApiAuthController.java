@@ -10,6 +10,7 @@ import com.example.ths_java_spring_boot_project.security.jwt.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -154,10 +154,10 @@ public class ApiAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse<Void>> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>("Error: Email is already registered!", null));
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, "User already exists: " + registerRequest.getEmail()));
         }
 
         User user = new User(
@@ -168,6 +168,6 @@ public class ApiAuthController {
         );
 
         userRepository.save(user);
-        return ResponseEntity.ok(new ApiResponse<>("User registered successfully!", null));
+        return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully"));
     }
 }
