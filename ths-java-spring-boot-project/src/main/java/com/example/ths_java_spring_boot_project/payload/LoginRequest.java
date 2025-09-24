@@ -4,6 +4,7 @@ public class LoginRequest {
     // Fields
     private String username;
     private String password;
+    private boolean rememberMe;
 
     // Constructors
     public LoginRequest() {}
@@ -23,5 +24,13 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 }

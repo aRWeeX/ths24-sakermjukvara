@@ -4,25 +4,27 @@ import java.util.List;
 
 public class JwtResponse {
     // Fields
-    private String token;
+    private String accessToken;
     private String type = "Bearer";
     private String username;
     private List<String> roles;
+    private String refreshToken;
 
     // Constructors
-    public JwtResponse(String accessToken, String username, List<String> roles) {
-        this.token = accessToken;
+    public JwtResponse(String accessToken, String refreshToken, String username, List<String> roles) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.username = username;
         this.roles = roles;
     }
 
     // Getters & Setters
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getType() {
@@ -47,5 +49,13 @@ public class JwtResponse {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
