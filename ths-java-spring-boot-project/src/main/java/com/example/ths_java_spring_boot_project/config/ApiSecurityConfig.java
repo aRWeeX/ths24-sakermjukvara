@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -82,27 +83,6 @@ public class ApiSecurityConfig {
                 // Disable CSRF because API is stateless (JWT is used)
                 .csrf(csrf -> csrf.disable())
 
-                // Stateless session management because JWT handles authentication
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
-                // Role-based access control
-                .authorizeHttpRequests(authz -> authz
-                        // Public auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-
-                        // USERs can access only their profile and book APIs
-                        .requestMatchers("/api/users/profile").hasRole("USER")
-                        .requestMatchers("/api/books/**").hasRole("USER")
-
-                        // ADMINs can access everything under /api/**
-                        .requestMatchers("/api/**").hasRole("ADMIN")
-
-                        // Deny all other requests as a safety measure
-                        .anyRequest().denyAll()
-                )
-
                 // Custom exception handling for unauthorized requests
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request,
@@ -133,8 +113,51 @@ public class ApiSecurityConfig {
                         .accessDeniedHandler(apiAccessDeniedHandler)  // 403 JSON
                 )
 
+                // Stateless session management because JWT handles authentication
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
                 // Register the JWT filter before Spring Security's username/password filter
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Role-based access control
+                .authorizeHttpRequests(authz -> authz
+                        // Public auth endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // USERs can access only their profile and book APIs
+                        .requestMatchers("/api/users/profile").hasRole("USER")
+                        .requestMatchers("/api/books/**").hasRole("USER")
+
+                        // ADMINs can access everything under /api/**
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+
+                        // Deny all other requests as a safety measure
+                        .anyRequest().denyAll()
+                )
+
+                .headers(headers -> headers
+                        // Enables HTTP Strict Transport Security (HSTS)
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)        // Applies HSTS to all subdomains
+                                .maxAgeInSeconds(31536000))     // Max age 1 year (in seconds)
+
+                        // Controls who can embed pages in frames; here only the same origin
+                        .frameOptions(frame -> frame.sameOrigin())
+
+                        // Defines Content Security Policy (CSP)
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives(
+                                        "default-src 'self'; script-src 'self'; object-src 'none'; style-src 'self';"))
+                        // - Allows resources only from own origin ('self')
+                        // - Disallows object tags, restricts scripts and styles to own origin
+
+                        // Enables browser Cross-Site Scripting (XSS) protection, blocking detected attacks
+                        .xssProtection(xss -> xss.disable())
+
+                        // Adds header to prevent MIME type sniffing
+                        .contentTypeOptions(Customizer.withDefaults()));
 
         return http.build();
     }

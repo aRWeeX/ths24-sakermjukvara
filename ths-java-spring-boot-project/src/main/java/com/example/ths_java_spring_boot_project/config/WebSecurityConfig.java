@@ -49,15 +49,14 @@ public class WebSecurityConfig {
             throws Exception {
 
         http
-                // Allow frames from the same origin, needed for H2 console UI to work
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
-                )
-
-
                 // Disable CSRF only for H2 console requests to avoid form errors
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**")
+                )
+
+                // Handle unauthorized access with a friendly HTML page and logs the attempt
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(webAccessDeniedHandler)  // 403 HTML
                 )
 
                 // Role/authorization configuration
@@ -72,9 +71,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // Handle unauthorized access with a friendly HTML page and logs the attempt
-                .exceptionHandling(ex -> ex
-                        .accessDeniedHandler(webAccessDeniedHandler)  // 403 HTML
+                // Allow frames from the same origin, needed for H2 console UI to work
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
                 );
 
         return http.build();

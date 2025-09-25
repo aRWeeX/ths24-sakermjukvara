@@ -6,7 +6,10 @@ import com.example.ths_java_spring_boot_project.payload.JwtResponse;
 import com.example.ths_java_spring_boot_project.payload.LoginRequest;
 import com.example.ths_java_spring_boot_project.payload.RegisterRequest;
 import com.example.ths_java_spring_boot_project.repository.UserRepository;
+import com.example.ths_java_spring_boot_project.security.LoginAttemptService;
 import com.example.ths_java_spring_boot_project.security.jwt.JwtUtils;
+import com.example.ths_java_spring_boot_project.security.jwt.RefreshTokenService;
+import com.example.ths_java_spring_boot_project.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,66 +41,87 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ApiAuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-
-    // In-memory store for refresh token rotation
-    private final Map<String, String> validRefreshTokens = new ConcurrentHashMap<>();
+    private final LoginAttemptService loginAttemptService;
+    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final long accessTokenValidityMs;
 
     public ApiAuthController(AuthenticationManager authenticationManager,
-                             UserRepository userRepository,
-                             PasswordEncoder passwordEncoder,
                              JwtUtils jwtUtils,
+                             LoginAttemptService loginAttemptService,
+                             PasswordEncoder passwordEncoder,
+                             RefreshTokenService refreshTokenService,
+                             UserRepository userRepository,
+                             UserService userService,
                              @Value("${app.expiration}") long accessTokenValidityMs) {
 
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.loginAttemptService = loginAttemptService;
+        this.passwordEncoder = passwordEncoder;
+        this.refreshTokenService = refreshTokenService;
+        this.userRepository = userRepository;
+        this.userService = userService;
         this.accessTokenValidityMs = accessTokenValidityMs;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        // 1. Authenticate user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        User user = userService.getUserByEmailEntity(loginRequest.getUsername());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (loginAttemptService.isBlocked(user)) {
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                    .body(new ApiResponse<>(
+                            false, "Account is temporarily locked due to failed login attempts"));
+        }
 
-        // 2. Extract username and role
-        String username = authentication.getName();
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        try {
+            // 1. Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        // 3. Generate access token (short-lived)
-        String accessToken = jwtUtils.generateAccessToken(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            loginAttemptService.loginSucceeded(user);
 
-        // 4. Generate refresh token with different lifetimes
-        Duration refreshDuration = loginRequest.isRememberMe()
-                ? Duration.ofDays(14)   // "remember me"
-                : Duration.ofHours(2);  // normal short-lived
+            // 2. Extract username and role
+            String username = authentication.getName();
+            String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-        String refreshToken = jwtUtils.generateRefreshToken(username, refreshDuration, loginRequest.isRememberMe());
+            // 3. Generate access token (short-lived)
+            String accessToken = jwtUtils.generateAccessToken(authentication);
 
-        // 5. Store refresh token for rotation
-        validRefreshTokens.put(username, refreshToken);
+            // 4. Generate refresh token with different lifetimes
+            Duration refreshDuration = loginRequest.isRememberMe()
+                    ? Duration.ofDays(14)   // "remember me"
+                    : Duration.ofHours(2);  // normal short-lived
 
-        // 6. Set HttpOnly cookie with refresh token
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .path("/api/auth")
-                .maxAge(refreshDuration)
-                .sameSite("Strict")
-                .build();
+            String refreshToken = jwtUtils.generateRefreshToken(username, refreshDuration, loginRequest.isRememberMe());
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            // 5. Store refresh token for rotation
+            refreshTokenService.storeToken(username, refreshToken);
 
-        // 7. Return access token in JSON
-        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken, username, Collections.singletonList(role)));
+            // 6. Set HttpOnly cookie with refresh token
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .path("/api/auth")
+                    .maxAge(refreshDuration)
+                    .sameSite("Strict")
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+            // 7. Return access token in JSON
+            return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken, username, Collections.singletonList(role)));
+        } catch (Exception e) {
+            loginAttemptService.loginFailed(user);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, "Invalid credentials"));
+        }
     }
 
     @PostMapping("/refresh")
@@ -122,7 +146,7 @@ public class ApiAuthController {
         boolean rememberMe = jwtUtils.getRememberMeFromJwtToken(refreshToken);
 
         // 4. Check token rotation: it must match the stored latest refresh token
-        String storedToken = validRefreshTokens.get(username);
+        String storedToken = refreshTokenService.getToken(username);
 
         if (storedToken == null || !storedToken.equals(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -136,7 +160,7 @@ public class ApiAuthController {
         String newRefreshToken = jwtUtils.generateRefreshToken(username, refreshDuration, rememberMe);
 
         // 7. Update stored token for rotation
-        validRefreshTokens.put(username, newRefreshToken);
+        refreshTokenService.storeToken(username, newRefreshToken);
 
         // 8. Update HttpOnly cookie with new refresh token
         ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
