@@ -2,6 +2,7 @@ package com.example.ths_java_spring_boot_project.entity;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +35,12 @@ public class User {
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @Column(name = "failed_login_attempts")
+    private int failedLoginAttempts = 0;
+
+    @Column(name = "lock_until")
+    private Instant lockUntil;
 
     // Constructors
     protected User() {}
@@ -118,5 +125,21 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public Instant getLockUntil() {
+        return lockUntil;
+    }
+
+    public void setLockUntil(Instant lockUntil) {
+        this.lockUntil = lockUntil;
     }
 }
