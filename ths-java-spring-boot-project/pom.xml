@@ -107,6 +107,17 @@
             <version>8.1</version>
         </dependency>
 
+        <!--
+        https://github.com/ulisesbocchio/jasypt-spring-boot
+
+        Jasypt Spring Boot provides Encryption support for property sources in Spring Boot Applications.
+        -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+
         <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

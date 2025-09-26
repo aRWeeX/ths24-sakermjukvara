@@ -90,6 +90,23 @@ INSERT INTO books (title, publication_year, available_copies, total_copies, auth
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('Finn Family Moomintroll', 1948, 1, 1, 10);
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('And Then There Were None', 1939, 1, 1, 11);
 
+-- Test user with personal identity number
+-- Original password: 2TVPXR%XKx1uMbA6hpyb
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password,
+    registration_date,
+    personal_identity_number
+) VALUES (
+    'Test',
+    'User',
+    'test.user@example.com',
+    '$2a$10$FQL.I1EkrEWH04sVrimAj.SkaQr/tLJRod.2whBCUcOP8hfP79cyC',
+    '1970-01-01 02:00:00',
+    '19700101-1234'  -- will be encrypted via Jasypt
+);
 -- Original password: password123
 INSERT INTO users (
     first_name,
