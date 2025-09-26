@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(50) NOT NULL DEFAULT 'USER',
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     failed_login_attempts INT NOT NULL DEFAULT 0,
-    lock_until TIMESTAMP
+    lock_until TIMESTAMP,
+    personal_identity_number VARCHAR(255)
 );
 
 -- Table: loans

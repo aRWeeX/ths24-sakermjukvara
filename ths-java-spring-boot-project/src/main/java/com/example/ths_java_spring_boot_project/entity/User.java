@@ -1,5 +1,6 @@
 package com.example.ths_java_spring_boot_project.entity;
 
+import com.example.ths_java_spring_boot_project.security.PersonalIdentityNumberAttributeConverter;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -41,6 +42,10 @@ public class User {
 
     @Column(name = "lock_until")
     private Instant lockUntil;
+
+    @Column(name = "personal_identity_number")
+    @Convert(converter = PersonalIdentityNumberAttributeConverter.class)
+    private String personalIdentityNumber;
 
     // Constructors
     protected User() {}
@@ -141,5 +146,13 @@ public class User {
 
     public void setLockUntil(Instant lockUntil) {
         this.lockUntil = lockUntil;
+    }
+
+    public String getPersonalIdentityNumber() {
+        return personalIdentityNumber;
+    }
+
+    public void setPersonalIdentityNumber(String personalIdentityNumber) {
+        this.personalIdentityNumber = personalIdentityNumber;
     }
 }
