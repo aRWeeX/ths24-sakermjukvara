@@ -1,24 +1,3 @@
---
--- File generated with SQLiteStudio v3.4.17 on fre maj 16 14:50:42 2025
---
--- Text encoding used: System
---
-BEGIN;
-
-DROP TABLE IF EXISTS loan_books;
-DROP TABLE IF EXISTS loans;
-DROP TABLE IF EXISTS books;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS authors;
-
--- Table: authors
-CREATE TABLE IF NOT EXISTS authors (
-    author_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    birth_year INTEGER,
-    nationality VARCHAR(100)
-);
 INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Astrid', 'Lindgren', 1907, 'Swedish');
 INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Stieg', 'Larsson', 1954, 'Swedish');
 INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Camilla', 'Läckberg', 1974, 'Swedish');
@@ -60,16 +39,6 @@ INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Th
 INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Umberto', 'Eco', 1932, 'Italian');
 INSERT INTO authors (first_name, last_name, birth_year, nationality) VALUES ('Haruki', 'Murakami', 1949, 'Japanese');
 
--- Table: books
-CREATE TABLE IF NOT EXISTS books (
-    book_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(200) NOT NULL,
-    publication_year INTEGER,
-    available_copies INTEGER DEFAULT 1,
-    total_copies INTEGER DEFAULT 1,
-    author_id BIGINT,
-    FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE SET NULL ON UPDATE CASCADE
-);
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('Pippi Longstocking', 1945, 2, 3, 1);
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('The Girl with the Dragon Tattoo', 2005, 1, 2, 2);
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('The Ice Princess', 2003, 2, 2, 3);
@@ -121,19 +90,6 @@ INSERT INTO books (title, publication_year, available_copies, total_copies, auth
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('Finn Family Moomintroll', 1948, 1, 1, 10);
 INSERT INTO books (title, publication_year, available_copies, total_copies, author_id) VALUES ('And Then There Were None', 1939, 1, 1, 11);
 
--- Table: users
-CREATE TABLE IF NOT EXISTS users (
-    user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    registration_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    role VARCHAR(50) NOT NULL DEFAULT 'USER',
-    enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    failed_login_attempts INT NOT NULL DEFAULT 0,
-    lock_until TIMESTAMP
-);
 -- Original password: password123
 INSERT INTO users (
     first_name,
@@ -275,15 +231,6 @@ INSERT INTO users (
     '2024-03-20 17:00:00'
 );
 
--- Table: loans
-CREATE TABLE IF NOT EXISTS loans (
-    loan_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    borrowed_date DATETIME NOT NULL,
-    due_date DATETIME NOT NULL,
-    returned_date DATETIME,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
-);
 INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (1, '2024-01-15 10:00:00', '2024-01-29 10:00:00', '2024-01-25 14:30:00');
 INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (2, '2024-01-20 11:00:00', '2024-02-03 11:00:00', '2024-02-01 09:15:00');
 INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (3, '2024-01-25 09:30:00', '2024-02-08 09:30:00', '2024-02-05 16:45:00');
@@ -335,14 +282,6 @@ INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (8, '
 INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (9, '2024-01-30 16:15:00', '2024-02-13 16:15:00', '2024-02-11 12:30:00');
 INSERT INTO loans (user_id, borrowed_date, due_date, returned_date) VALUES (10, '2024-02-02 14:00:00', '2024-02-16 14:00:00', '2024-02-14 10:00:00');
 
--- Table: loan_books
-CREATE TABLE IF NOT EXISTS loan_books (
-    loan_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
-    PRIMARY KEY (loan_id, book_id),
-    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
-);
 INSERT INTO loan_books (loan_id, book_id) VALUES (1, 1);
 INSERT INTO loan_books (loan_id, book_id) VALUES (2, 5);
 INSERT INTO loan_books (loan_id, book_id) VALUES (3, 8);
@@ -393,5 +332,3 @@ INSERT INTO loan_books (loan_id, book_id) VALUES (7, 48);
 INSERT INTO loan_books (loan_id, book_id) VALUES (8, 49);
 INSERT INTO loan_books (loan_id, book_id) VALUES (9, 50);
 INSERT INTO loan_books (loan_id, book_id) VALUES (10, 10);
-
-COMMIT;
